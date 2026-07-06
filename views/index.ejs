@@ -1,0 +1,69 @@
+<%- include("partials/header.ejs") %>
+
+<!-- <section class="py-5 text-center container">
+  <div class="row py-lg-5">
+    <div class="col-lg-6 col-md-8 mx-auto">
+      <h1 class="fw-light">Welcome to BlogIt</h1>
+
+      <p class="lead text-body-secondary">
+        A simple place to share thoughts, ideas, and moments worth remembering.</br > Add a post, or view what others have written below.
+      </p>
+
+      <p>
+        <a href="/post-add" class="btn btn-main-page my-2">Write a post</a>
+      </p>
+    </div>
+  </div>
+</section> -->
+²
+<div class="p-4 p-md-5 mb-4 mx-5 rounded text-body-emphasis intro-container">
+  <div class="col-lg-6 px-0">
+    <h1 class="display-4 fst-italic fw-bold text-start">Welcome to BlogIt</h1>
+    <p class="lead my-3">
+      A simple place to share thoughts, ideas, and moments worth remembering.</br > Add a post, or view what others have written below.
+    </p>
+    <p class="lead mb-0">
+      <a href="/post-add" class="text-body-emphasis fw-bold">Add a post</a>
+    </p>
+  </div>
+</div>
+
+<div class="container">
+    <div class="row mb-2">
+        <% for (var index=0; index<posts.length; index++) { %>
+            <div class="col-md-6">
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                <div class="col p-4 d-flex flex-column position-static">
+                    <strong class="d-inline-block mb-2 text-success-emphasis"><%= posts[index].category %></strong>
+                    <h3 class="mb-0"><%= posts[index].title %></h3>
+                    <div class="mb-1 text-body-secondary"><%= posts[index].date %></div>
+
+                    <p class="card-text mb-auto">
+                    <%= posts[index].preview %>...
+                    </p>
+
+                    <a href="/post-view?id=<%= posts[index].id %>" class="icon-link gap-1 icon-link-hover stretched-link post-view-link">
+                    Continue reading...
+                    <svg class="bi" aria-hidden="true">
+                        <use xlink:href="#chevron-right"></use>
+                    </svg>
+                    </a>
+                </div>
+
+                <div class="col-auto d-none d-lg-block">
+                    <svg aria-label="Placeholder: Thumbnail" class="bd-placeholder-img" height="250" preserveAspectRatio="xMidYMid slice" role="img" width="200" xmlns="http://www.w3.org/2000/svg">
+                    <title>Placeholder</title>
+                    <rect width="100%" height="100%" fill="#B3541E"></rect>
+                    <text x="50%" y="50%" fill="#eceeef" dy=".3em"><%= Math.ceil(posts[index].content.length/1000)%> min read</text>
+                    </svg>
+                </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
+<% if (posts.length == 0)  { %>
+    
+<% } %>
+
+<%- include("partials/footer.ejs") %>

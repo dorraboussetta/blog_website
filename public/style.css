@@ -1,0 +1,141 @@
+body{
+    background-color: #FFEDED;
+}
+.form-container{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    justify-content: center;
+    align-content: center;
+    padding: 30px 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 40px;
+    margin-bottom: 40px;
+    background-color: #FFCCD2;
+
+}
+
+h1{
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: black;
+    text-align: center;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group{
+    margin-bottom: 15px;
+}
+
+label{
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    color: #444;
+}
+
+.form-group input,.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.submit-btn, .btn-main-page{
+    background: #B3541E;
+    color: aliceblue;
+    font-size: 1rem;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.submit-btn:hover{
+    background: #362222;
+}
+
+.text-bg-header{
+    background-color: #362222;
+}
+
+.navbar-bg{
+    background-color: #362222;
+}
+
+.navbar-text{
+    color: white;
+}
+
+.footer-container{
+    background-color: #362222;
+}
+
+.footer-text{
+    color: white;
+}
+
+a{
+    color: #FFCCD2; ;
+}
+
+.intro-container{
+    background-color: rgba(255, 204, 210, 0.8);
+}
+ .post-view-link{
+    color:  #B3541E;
+ }
+
+ .post-container{
+    margin: 70px 200px 70px 200px;
+ }
+
+ .post-view-buttons{
+    margin-top: 5px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    
+ }
+
+ .edit-btn{
+    margin-right: 5px;
+ }
+
+  .edit-btn,.delete-btn {
+    border: none;
+    background-color: #B3541E;
+    color: white;
+    border-radius: 10px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+ }
+
+.return-btn-div{
+    display: flex;
+    justify-content: flex-end;
+    width: 75%;
+    margin: 70px 200px 30px 200px;
+
+ }
+
+.return-btn-div button{
+    border: none;
+    background-color: #FFCCD2;
+    color: #362222;
+    border-radius: 10px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+
+ }
+
+
+ 
