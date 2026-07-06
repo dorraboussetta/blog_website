@@ -71,19 +71,24 @@ Screenshots are included to show the main pages and features of the application.
 
 ### Homepage
 
-![Homepage](./screenshots/homepage.png)
+![Homepage](./screenshots/1.png)
+![Homepage](./screenshots/2.png)
+![Homepage](./screenshots/5.png)
 
 ### Add Post Page
 
-![Add Post Page](./screenshots/add-post.png)
+![Add Post Page](./screenshots/3.png)
+![Add Post Page](./screenshots/4.png)
 
 ### Post View Page
 
-![Post View Page](./screenshots/post-view.png)
+![Post View Page](./screenshots/6.png)
+![Post View Page](./screenshots/7.png)
 
 ### Edit Post Page
 
-![Edit Post Page](./screenshots/edit-post.png)
+![Edit Post Page](./screenshots/8.png)
+![Edit Post Page](./screenshots/9.png)
 
 ## Installation
 
@@ -135,10 +140,15 @@ project-folder/
 ├── public/
 │   └── style.css
 ├── screenshots/
-│   ├── homepage.png
-│   ├── add-post.png
-│   ├── post-view.png
-│   └── edit-post.png
+│   ├── 1.png
+│   ├── 2.png
+│   ├── 3.png
+│   └── 4.png
+|   ├── 5.png
+│   ├── 6.png
+│   ├── 7.png
+|   ├── 8.png
+│   └── 9.png
 └── views/
     ├── index.ejs
     ├── post-add.ejs
