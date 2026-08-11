@@ -12,8 +12,6 @@ function UserDropdown() {
             const response = await axios.get("/api/user-info"); 
             setName(response.data.name);
             setImage(response.data.image);
-            console.log(response);
-              
         }catch(err){
             console.log(err);
         }

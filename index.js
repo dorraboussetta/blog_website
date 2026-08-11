@@ -179,7 +179,7 @@ app.post("/signup", async (req, res, next) => {
         } else {
           try {
             const response = await db.query("INSERT INTO users (full_name, img_url, email, password) VALUES ($1, $2, $3, $4) RETURNING *;", [fullName, imgUrl, email, hash]);
-            const user = response.rows[0];
+            const user = {name : response.rows[0].full_name, image : response.rows[0].img_url, id : response.rows[0].id};
             req.logIn(user, (err) => {
               if (err) {
                 return next(err);
@@ -284,18 +284,14 @@ app.get("/api/user-info", (req, res) => {
 
 app.get("/api/comment-author-info", async (req, res) => {
 
-
-  try {
-    const userId = await db.query("SELECT user_id FROM posts WHERE id=$1", [req.query.id]);
     try {
-      const userInfo = await db.query("SELECT img_url FROM users WHERE id=$1", [userId.rows[0].user_id]);
-      res.json({ img_url: userInfo.rows[0].img_url, name: req.user.name });
+      const commentAuthorId = await db.query("SELECT full_name, img_url FROM users WHERE id=$1", [req.query.id]);
+      console.log({ img_url: commentAuthorId.rows[0].img_url, name: commentAuthorId.rows[0].full_name });
+      res.json({ img_url: commentAuthorId.rows[0].img_url, name: commentAuthorId.rows[0].full_name });
     } catch (err) {
       console.log(err);
     }
-  } catch (err) {
-    console.log(err);
-  }
+
 
 });
 
@@ -380,6 +376,38 @@ app.get("/api/delete-comment", async (req, res) => {
 
 });
 
+app.get("/api/add-bookmark", async (req, res) => {
+
+  try {
+    const response = await db.query("INSERT INTO bookmarks (post_id, user_id) VALUES ($1,$2) RETURNING *;", [req.query.postId, req.query.userId]);
+    res.sendStatus(200);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(404);
+  }
+});
+
+app.get("/api/delete-bookmark", async (req, res) => {
+
+  try {
+    const response = await db.query("DELETE FROM bookmarks WHERE post_id = $1 AND user_id = $2 RETURNING *;", [req.query.postId, req.query.userId]);
+    res.sendStatus(200);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(404);
+  }
+});
+
+app.get("/api/display-bookmarks", async (req, res) => {
+  try {
+    const result = await db.query("SELECT post_id FROM bookmarks WHERE user_id=$1;", [req.query.userId]);
+    //console.log(result.rows);
+  } catch (err) {
+    console.log(err);
+  }
+})
+
+
 
 app.get("/post-add", (req, res) => {
   if (req.isAuthenticated()) {
@@ -397,7 +425,7 @@ app.post("/submit-post", async (req, res) => {
     title: req.body["title"],
     category: req.body["category"],
     content: req.body["content"],
-    preview: req.body["content"].slice(0, 120),
+    preview: req.body["content"].slice(0, 135) + "...",
     date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
     time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
     author: user.name,
@@ -415,7 +443,6 @@ app.post("/submit-post", async (req, res) => {
     console.log(err);
   }
 
-  console.log(typeof newPost.id);
   res.redirect(`/post-view?id=${newPost.id}`);
 });
 
@@ -446,7 +473,7 @@ app.post("/update-post", async (req, res) => {
 
   try {
     const result = await db.query("UPDATE posts SET title = $1, category = $2, content = $3, preview = $4, date = $5, time = $6, full_timestamp = CURRENT_TIMESTAMP WHERE id=$7 RETURNING *;",
-      [req.body["title"], req.body["category"], req.body["content"], req.body["content"].slice(0, 120),
+      [req.body["title"], req.body["category"], req.body["content"], req.body["content"].slice(0, 135) + "...",
       new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
       new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
         id]
@@ -476,14 +503,14 @@ passport.use(
   new Strategy({ usernameField: "email" }, async function (email, password, cb) {
     try {
       const result = await db.query("SELECT * FROM users WHERE email=$1", [email]);
-      const userSessionInfo = { id: result.rows[0].id, email: result.rows[0].email, name: result.rows[0].full_name, image: result.rows[0].img_url };
-      const user = result.rows[0];
       if (result.rows.length > 0) {
         if (user.password === "google") {
           return cb(null, false, {
             message: "Sign in with your Google account."
           });
         };
+        const userSessionInfo = { id: result.rows[0].id, email: result.rows[0].email, name: result.rows[0].full_name, image: result.rows[0].img_url };
+        const user = result.rows[0];
         const storedHashedPassword = user.password;
         bcrypt.compare(password, storedHashedPassword, (err, valid) => {
           if (err) {
@@ -500,7 +527,7 @@ passport.use(
           }
         })
       } else {
-        return cb(null, false, { message: "User not found." });
+        return cb(null, false, { message: "User not found. Try signing up." });
       }
     } catch (err) {
       console.log(err);
@@ -519,7 +546,6 @@ passport.use(
       userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
     },
     async function (accessToken, refreshToken, profile, cb) {
-      console.log(JSON.stringify(profile.photos[0].value));
       try {
         const result = await db.query("SELECT * FROM users WHERE email=$1;", [profile.emails[0].value]);
         if (result.rows.length === 0) {

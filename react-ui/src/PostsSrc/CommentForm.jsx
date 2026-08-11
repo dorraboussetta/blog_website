@@ -3,12 +3,18 @@ import React, { useState } from "react";
 
 function CommentForm(props) {
   const [commentText, setCommentText] = useState("");
+  const [commentFormClicked, setCommentFormClicked] = useState(false);
+
   const params = new URLSearchParams(window.location.search);
   const PostId = params.get("id");
 
+  function handleClick(){
+    setCommentFormClicked(true);
+  };
+
   function handleChange(event) {
     setCommentText(event.target.value);
-  }
+  };
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -23,6 +29,7 @@ function CommentForm(props) {
     props.onSubmit();
 
     setCommentText("");
+    setCommentFormClicked(false);
 
   }
 
@@ -33,11 +40,13 @@ function CommentForm(props) {
           <label for="comment">Comments:</label>
           <textarea
             className="form-control"
-            rows="5"
+            rows={commentFormClicked? "5" : "1"}
             id="comment"
             name="text"
+            placeholder="Add a comment here..."
             value={commentText}
             onChange={handleChange}
+            onClick={handleClick}
           />
         </div>
         <div>

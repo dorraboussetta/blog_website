@@ -5,7 +5,7 @@ import axios from "axios";
 
 function CommentsSection(props) {
   const [comments, setComments] = useState([]);
-  const [ActiveUserId, setActiveUserId] = useState(-1);
+  const [activeUserId, setActiveUserId] = useState(-1);
   const [commentsReoaded, setCommentsReloaded] = useState(false);
 
   async function getActiveUserInfo() {
@@ -67,7 +67,7 @@ function CommentsSection(props) {
                   key={commentItem.id}
                   commentObject={commentItem}
                   PostId={props.id}
-                  LoggedInUserId={ActiveUserId}
+                  LoggedInUserId={activeUserId}
                   onDelete={deleteComment}
                   initNbLikes = {commentItem.nb_likes}
                 />

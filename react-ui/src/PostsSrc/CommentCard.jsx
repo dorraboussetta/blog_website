@@ -19,7 +19,7 @@ function CommentCard(props) {
 
     async function getCred() {
         try {
-            const result = await axios.get("/api/comment-author-info?id=" + props.PostId);
+            const result = await axios.get("/api/comment-author-info?id=" + props.commentObject.user_id);
             console.log(result.data);
             setAuthorInfo({
                 ImgUrl: result.data.img_url,
@@ -32,6 +32,9 @@ function CommentCard(props) {
 
     async function updateNbLikes(event){
         event.preventDefault();
+        if (props.LoggedInUserId === -1) {
+            return;
+        }
         try {
             const result = await axios.get("/api/like-comment?id=" + String(props.commentObject.id));
             setNbLikes(result.data);
@@ -62,7 +65,7 @@ function CommentCard(props) {
                             <h6 className="mb-0">{authorInfo.name}</h6>
                             <span className="comment-time">{dayjs().to(dayjs(String(props.commentObject.full_timestamp)))}</span>
                         </div>
-                        <p className="mb-2">{props.commentObject.content}</p>
+                        <p className="mb-2 comment-content">{props.commentObject.content}</p>
                         <div className="comment-actions">
                             <a href="#" onClick={updateNbLikes}> <FavoriteIcon sx={{ color: red[500] }}/> {nbLikes}</a> 
                             {(props.LoggedInUserId !== -1 && props.LoggedInUserId === props.commentObject.user_id) ?

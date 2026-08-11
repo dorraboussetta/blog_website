@@ -311,3 +311,12 @@ a {
     border-left: 2px solid #e9ecef;
     padding-left: 20px;
 }
+
+.post-content, .comment-content{
+  white-space: pre-wrap;
+}
+
+.bookmark-icon{
+  display: flex;
+  justify-content: flex-end;
+}
