@@ -1,21 +1,5 @@
 <%- include("partials/header.ejs") %>
 
-<!-- <section class="py-5 text-center container">
-  <div class="row py-lg-5">
-    <div class="col-lg-6 col-md-8 mx-auto">
-      <h1 class="fw-light">Welcome to BlogIt</h1>
-
-      <p class="lead text-body-secondary">
-        A simple place to share thoughts, ideas, and moments worth remembering.</br > Add a post, or view what others have written below.
-      </p>
-
-      <p>
-        <a href="/post-add" class="btn btn-main-page my-2">Write a post</a>
-      </p>
-    </div>
-  </div>
-</section> -->
-²
 <div class="p-4 p-md-5 mb-4 mx-5 rounded text-body-emphasis intro-container">
   <div class="col-lg-6 px-0">
     <h1 class="display-4 fst-italic fw-bold text-start">Welcome to BlogIt</h1>
@@ -27,8 +11,11 @@
     </p>
   </div>
 </div>
+<div id="root"></div>
 
-<div class="container">
+<div id="HomePagePosts" class="container"></div>
+
+<!-- <div class="container">
     <div class="row mb-2">
         <% for (var index=0; index<posts.length; index++) { %>
             <div class="col-md-6">
@@ -61,7 +48,7 @@
             </div>
         <% } %>
     </div>
-</div>
+</div> -->
 <% if (posts.length == 0)  { %>
     
 <% } %>

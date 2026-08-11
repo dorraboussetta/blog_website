@@ -3,55 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>BlogIt</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="/style.css">
 </head>
  
 <body class="d-flex flex-column min-vh-100">
   <main>
-    <header>
-    <!-- PUT THE COLLAPSE SECTION HERE -->
-    <div class="text-bg-header collapse" id="navbarHeader">
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-8 col-md-7 py-4">
-                <h4 class="navbar-text">About</h4>
-                <p class="navbar-text">
-                    BlogIt is a cozy space for sharing thoughts, stories, and everyday ideas. 
-                    Whether it is a quick reflection, a personal update, or a longer piece, this blog is made for simple writing and easy reading.
-
-                </p>
-                </div>
-
-                <div class="col-sm-4 offset-md-1 py-4">
-                <h4 class="navbar-text">Contact</h4>
-                <ul class="list-unstyled">
-                    <li><a href="https://x.com/" class="text-white">Follow on X</a></li>
-                    <li><a href="https://facebook.com/" class="text-white">Like on Facebook</a></li>
-                    <li><a href="https://gmail.com/" class="text-white">Email me</a></li>
+    <header class="p-3 navbar-bg">
+        <div class="container  navbar-bg">
+             
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start text-white">
+                <a href="/" class="navbar-brand d-flex align-items-center me-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16">
+                    <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001"/>
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                    <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                    <strong>BlogIt</strong>
+                </a>
+            
+                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0 ms-2">
+                    <li><a href="/" class="nav-link px-2 text-white">Home</a></li>
+                    <li><a href="/my-posts" class="nav-link px-2 text-white">My Posts</a></li>
+                    <li><a href="/bookmarks" class="nav-link px-2 text-white">Bookmarks</a></li>
+                    <li><a href="/faqs" class="nav-link px-2 text-white">FAQs</a></li>
+                    <li><a href="/about" class="nav-link px-2 text-white">About</a></li>
                 </ul>
-                </div>
+                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+                    <input type="search" class="form-control form-control-dark text-bg-white" placeholder="Search..." aria-label="Search">
+                </form>
+                <div id="UserArea" class="text-end"></div>
             </div>
         </div>
-    </div>
-
-    <!-- YOUR NAVBAR GOES RIGHT AFTER IT -->
-    <div class="navbar navbar-dark navbar-bg shadow-sm">
-        <div class="container">
-        <a href="#" class="navbar-brand d-flex align-items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16">
-            <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001"/>
-            </svg>            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-            <circle cx="12" cy="13" r="4"></circle>
-            </svg>
-            <strong>BlogIt</strong>
-        </a>
-
-        <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        </div>
-    </div>
     </header>
+    
+    
     

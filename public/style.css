@@ -1,141 +1,313 @@
-body{
-    background-color: #FFEDED;
+body {
+  background-color: #ffeded;
 }
-.form-container{
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-    justify-content: center;
-    align-content: center;
-    padding: 30px 20px;
+.form-container {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  justify-content: center;
+  align-content: center;
+  padding: 30px 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 40px;
+  margin-bottom: 40px;
+  background-color: #ffccd2;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: black;
+  text-align: center;
+  color: #362222;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  color: #444;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.submit-btn,
+.btn-main-page {
+  background: #b3541e;
+  color: aliceblue;
+  font-size: 1rem;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.submit-btn:hover {
+  background: #362222;
+}
+
+.text-bg-header {
+  background-color: #362222;
+}
+
+.navbar-bg {
+  background-color: #362222;
+}
+
+.navbar-text {
+  color: white;
+}
+
+.footer-container {
+  background-color: #362222;
+}
+
+.footer-text {
+  color: white;
+}
+
+a {
+  color: #ffccd2;
+}
+
+.intro-container {
+  background-color: rgba(255, 204, 210, 0.8);
+}
+.post-view-link {
+  color: #b3541e;
+}
+
+.post-container {
+  margin: 70px 200px 70px 200px;
+}
+
+.post-view-buttons {
+  margin-top: 5px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.edit-btn {
+  margin-right: 5px;
+}
+
+.edit-btn,
+.delete-btn {
+  border: none;
+  background-color: #b3541e;
+  color: white;
+  border-radius: 10px;
+  padding: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.return-btn-div {
+  display: flex;
+  justify-content: flex-end;
+  width: 75%;
+  margin: 70px 200px 30px 200px;
+}
+
+.return-btn-div button {
+  border: none;
+  background-color: #ffccd2;
+  color: #362222;
+  border-radius: 10px;
+  padding: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.sign-up-btn,
+.signup-btn-form:hover {
+  background-color: #ffccd2;
+}
+.signup-btn-form:hover {
+  background-color: #362222;
+}
+
+.signup-btn-form,
+.signin-btn-form {
+  background-color: #b3541e;
+  border: none;
+}
+
+.signup-form,
+.signin-form {
+  background-color: #ffccd2;
+}
+
+.login-with-google-btn {
+  align-self: center;
+  width: fit-content;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
+
+  padding: 12px 16px 12px 42px;
+  border: none;
+  border-radius: 3px;
+  box-shadow:
+    0 -1px 0 rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(0, 0, 0, 0.25);
+
+  color: #757575;
+  font-size: 14px;
+  font-weight: 500;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMTcuNiA5LjJsLS4xLTEuOEg5djMuNGg0LjhDMTMuNiAxMiAxMyAxMyAxMiAxMy42djIuMmgzYTguOCA4LjggMCAwIDAgMi42LTYuNnoiIGZpbGw9IiM0Mjg1RjQiIGZpbGwtcnVsZT0ibm9uemVybyIvPjxwYXRoIGQ9Ik05IDE4YzIuNCAwIDQuNS0uOCA2LTIuMmwtMy0yLjJhNS40IDUuNCAwIDAgMS04LTIuOUgxVjEzYTkgOSAwIDAgMCA4IDV6IiBmaWxsPSIjMzRBODUzIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNNCAxMC43YTUuNCA1LjQgMCAwIDEgMC0zLjRWNUgxYTkgOSAwIDAgMCAwIDhsMy0yLjN6IiBmaWxsPSIjRkJCQzA1IiBmaWxsLXJ1bGU9Im5vbnplcm8iLz48cGF0aCBkPSJNOSAzLjZjMS4zIDAgMi41LjQgMy40IDEuM0wxNSAyLjNBOSA5IDAgMCAwIDEgNWwzIDIuNGE1LjQgNS40IDAgMCAxIDUtMy43eiIgZmlsbD0iI0VBNDMzNSIgZmlsbC1ydWxlPSJub256ZXJvIi8+PHBhdGggZD0iTTAgMGgxOHYxOEgweiIvPjwvZz48L3N2Zz4=);
+  background-color: white;
+  background-repeat: no-repeat;
+  background-position: 12px 11px;
+
+  &:hover {
+    box-shadow:
+      0 -1px 0 rgba(0, 0, 0, 0.04),
+      0 2px 4px rgba(0, 0, 0, 0.25);
+  }
+
+  &:active {
+    background-color: #eeeeee;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow:
+      0 -1px 0 rgba(0, 0, 0, 0.04),
+      0 2px 4px rgba(0, 0, 0, 0.25),
+      0 0 0 3px #c8dafc;
+  }
+
+  &:disabled {
+    filter: grayscale(100%);
+    background-color: #ebebeb;
+    box-shadow:
+      0 -1px 0 rgba(0, 0, 0, 0.04),
+      0 1px 1px rgba(0, 0, 0, 0.25);
+    cursor: not-allowed;
+  }
+}
+
+.error-message {
+  color: red;
+}
+
+.add-post-anchor-tag {
+  text-align: center;
+  width: 100%;
+  display: block;
+  color: #b3541e;
+}
+
+.comment-btn {
+  border: none;
+  background-color: #b3541e;
+  color: white;
+  border-radius: 10px;
+  padding: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.comment-section {
+    max-width: 1116px;
+    margin: 2rem auto;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+.comment-box {
+    background: white;
     border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    margin-top: 40px;
-    margin-bottom: 40px;
-    background-color: #FFCCD2;
-
-}
-
-h1{
-    font-size: 2.5rem;
+    padding: 20px;
     margin-bottom: 20px;
-    color: black;
-    text-align: center;
+    transition: transform 0.2s;
+    border: 1px solid #e9ecef;
 }
 
-form{
-    display: flex;
-    flex-direction: column;
+.comment-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.form-group{
-    margin-bottom: 15px;
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
-label{
-    font-size: 1.2rem;
-    margin-bottom: 5px;
-    color: #444;
+.comment-input {
+    border-radius: 20px;
+    padding: 15px 20px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s;
 }
 
-.form-group input,.form-group textarea {
-    width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+.comment-input:focus {
+    box-shadow: none;
+    border-color: #86b7fe;
 }
 
-.submit-btn, .btn-main-page{
-    background: #B3541E;
-    color: aliceblue;
-    font-size: 1rem;
-    padding: 12px 20px;
+.btn-comment {
+    border-radius: 20px;
+    padding: 8px 25px;
+    background: #0d6efd;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.3s;
 }
 
-.submit-btn:hover{
-    background: #362222;
+.btn-comment:hover {
+    background: #0b5ed7;
+    transform: translateY(-1px);
 }
 
-.text-bg-header{
-    background-color: #362222;
+.comment-actions {
+    font-size: 0.9rem;
 }
 
-.navbar-bg{
-    background-color: #362222;
+.comment-actions a {
+    color: #6c757d;
+    text-decoration: none;
+    margin-right: 15px;
+    transition: color 0.2s;
 }
 
-.navbar-text{
-    color: white;
+.comment-actions a:hover {
+    color: #0d6efd;
 }
 
-.footer-container{
-    background-color: #362222;
+.comment-time {
+    color: #adb5bd;
+    font-size: 0.85rem;
 }
 
-.footer-text{
-    color: white;
+.reply-section {
+    margin-left: 60px;
+    border-left: 2px solid #e9ecef;
+    padding-left: 20px;
 }
-
-a{
-    color: #FFCCD2; ;
-}
-
-.intro-container{
-    background-color: rgba(255, 204, 210, 0.8);
-}
- .post-view-link{
-    color:  #B3541E;
- }
-
- .post-container{
-    margin: 70px 200px 70px 200px;
- }
-
- .post-view-buttons{
-    margin-top: 5px;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    
- }
-
- .edit-btn{
-    margin-right: 5px;
- }
-
-  .edit-btn,.delete-btn {
-    border: none;
-    background-color: #B3541E;
-    color: white;
-    border-radius: 10px;
-    padding: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
- }
-
-.return-btn-div{
-    display: flex;
-    justify-content: flex-end;
-    width: 75%;
-    margin: 70px 200px 30px 200px;
-
- }
-
-.return-btn-div button{
-    border: none;
-    background-color: #FFCCD2;
-    color: #362222;
-    border-radius: 10px;
-    padding: 5px;
-    padding-left: 10px;
-    padding-right: 10px;
-
- }
-
-
- 

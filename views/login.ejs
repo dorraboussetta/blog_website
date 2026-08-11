@@ -1,0 +1,44 @@
+<%- include("partials/header.ejs") %>
+
+<div class="col-md-10 mx-auto col-lg-5 my-3">
+    <h1>Welcome Back!</h1>
+     <div class="signin-form pb-4">
+        <form class="p-4 p-md-5 pb-3 pb-md-3 border rounded-3 signin-form" action="/login" method="post">
+            <div class="form-floating mb-3">
+                <input type="email" name="email" class="form-control" id="floatingInput" placeholder="name@example.com" fdprocessedid="nx384">
+                <label for="floatingInput">Email address</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password" fdprocessedid="t8e1p6">
+                <label for="floatingPassword">Password</label>
+            </div>
+            <div class="checkbox mb-3"> 
+                <label> <input type="checkbox" id="rememberMe" name="rememberMe" value="yes"> Remember me</label> 
+            </div>
+            <% if (locals.errorMessage) {  %>
+                <p class="error-message text-center"> <%= errorMessage %></p>
+            <% } %>
+
+            <button class="w-100 btn btn-lg btn-primary signin-btn-form" type="submit" fdprocessedid="97z82">Sign in</button>
+            <hr class="my-4">
+            <strong class="text-body-secondary text-center mb-0">Or</strong>
+
+        </form>
+        <div class="d-flex justify-content-center">
+            <form action="/auth/google" method="get">
+                <button type="submit" class="login-with-google-btn btn" >
+                Sign in with Google
+                </button>
+                <div class="checkbox mb-3 mt-2 d-flex justify-content-center"> 
+                    <label class=""> <input type="checkbox" id="rememberMe" name="rememberMe" value="yes"> Remember me</label> 
+                </div>
+            </form>
+        </div>
+        
+    </div>
+
+</div>
+
+
+<%- include("partials/footer.ejs") %>
