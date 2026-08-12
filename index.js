@@ -354,9 +354,9 @@ app.get("/api/get-comments", async (req, res) => {
 
 });
 
-app.get("/api/like-comment", async (req, res) => {
+app.get("/api/update-comment-nb-likes", async (req, res) => {
   try {
-    const result = await db.query("UPDATE comments SET nb_likes = nb_likes + 1, full_timestamp=CURRENT_TIMESTAMP WHERE id=$1 RETURNING nb_likes; ", [req.query.id]);
+    const result = await db.query("UPDATE comments SET nb_likes = nb_likes + $1, full_timestamp=CURRENT_TIMESTAMP WHERE id=$2 RETURNING nb_likes; ", [req.query.update ,req.query.id]);
     res.json(result.rows[0].nb_likes);
   } catch (err) {
     console.log(err);
@@ -374,6 +374,41 @@ app.get("/api/delete-comment", async (req, res) => {
   }
 
 });
+
+app.get("/api/get-comment-like", async (req, res) => {
+  try{
+    const result = await db.query("SELECT * FROM liked_comments WHERE comment_id = $1 AND user_id = $2;", [req.query.commentId, req.query.userId]);
+    if (result.rows.length === 0) {
+      res.json({isLikedComment : false});
+    } else {
+      res.json({isLikedComment : true});
+    }
+  }catch(err){
+    console.log(err);
+    res.sendStatus(404);
+  }
+}); 
+
+app.get("/api/add-comment-like", async (req, res) => {
+  try{
+    const result = await db.query("INSERT INTO liked_comments (comment_id, user_id) VALUES ($1, $2);", [req.query.commentId, req.query.userId]);
+    res.sendStatus(200);
+  }catch(err){
+    console.log(err);
+    res.sendStatus(404);
+  }
+}); 
+
+app.get("/api/delete-comment-like", async (req, res) => {
+  try{
+    const result = await db.query("DELETE FROM liked_comments WHERE comment_id = $1 AND user_id = $2;", [req.query.commentId, req.query.userId]);
+    res.sendStatus(200);
+  }catch(err){
+    console.log(err);
+    res.sendStatus(404);
+  }
+}); 
+
 
 app.get("/api/add-bookmark", async (req, res) => {
 
@@ -400,7 +435,6 @@ app.get("/api/delete-bookmark", async (req, res) => {
 app.get("/api/bookmarked-posts", async (req, res) => {
   try {
     const result = await db.query("SELECT post_id FROM bookmarks WHERE user_id=$1;", [req.query.userId]);
-    console.log(result.rows);
     res.json(result.rows);
   } catch (err) {
     console.log(err);
@@ -416,9 +450,7 @@ app.get("/api/get-post", async (req, res) => {
     console.log(err);
   }
 
-})
-
-
+}); 
 
 app.get("/post-add", (req, res) => {
   if (req.isAuthenticated()) {

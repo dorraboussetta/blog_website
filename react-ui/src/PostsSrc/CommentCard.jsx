@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import { red } from '@mui/material/colors';
+import { red, grey } from '@mui/material/colors';
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
@@ -12,6 +12,7 @@ dayjs.extend(relativeTime);
 function CommentCard(props) {
 
     const [nbLikes, setNbLikes] = useState(props.initNbLikes);
+    const [likedComment, setLikedComment] = useState(false);
     const [authorInfo, setAuthorInfo] = useState({
         ImgUrl: "",
         name: "",
@@ -20,7 +21,6 @@ function CommentCard(props) {
     async function getCred() {
         try {
             const result = await axios.get("/api/comment-author-info?id=" + props.commentObject.user_id);
-            console.log(result.data);
             setAuthorInfo({
                 ImgUrl: result.data.img_url,
                 name: result.data.name
@@ -30,25 +30,63 @@ function CommentCard(props) {
         }
     };
 
-    async function updateNbLikes(event){
-        event.preventDefault();
-        if (props.LoggedInUserId === -1) {
-            return;
-        }
+    async function updateNbLikes(number) {
         try {
-            const result = await axios.get("/api/like-comment?id=" + String(props.commentObject.id));
+            const result = await axios.get("/api/update-comment-nb-likes", { params: { id: props.commentObject.id, update: number } });
             setNbLikes(result.data);
         } catch (err) {
             console.log(err);
         }
 
+    };
+
+    async function updateLikeBtn(event) {
+        event.preventDefault();
+        if (props.LoggedInUserId === -1) {
+            return;
+        }
+
+        if (likedComment) {
+            unlikeComment();
+            updateNbLikes(-1);
+        } else {
+            likeComment();
+            updateNbLikes(1);
+        }
+
+
     }
 
- 
-    // console.log(authorInfo);
+    async function likeComment() {
+        try {
+            const result = await axios.get("/api/add-comment-like", { params: { commentId: props.commentObject.id, userId: props.LoggedInUserId } });
+            setLikedComment(true);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    async function unlikeComment() {
+        try {
+            const result = await axios.get("/api/delete-comment-like", { params: { commentId: props.commentObject.id, userId: props.LoggedInUserId } });
+            setLikedComment(false);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    async function getLikedStatus() {
+        try {
+            const result = await axios.get("/api/get-comment-like", { params: { commentId: props.commentObject.id, userId: props.LoggedInUserId } });
+            setLikedComment(result.data.isLikedComment);
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
     useEffect(() => {
         getCred();
+        getLikedStatus();
     }, []);
 
 
@@ -67,7 +105,17 @@ function CommentCard(props) {
                         </div>
                         <p className="mb-2 comment-content">{props.commentObject.content}</p>
                         <div className="comment-actions">
-                            <a href="#" onClick={updateNbLikes}> <FavoriteIcon sx={{ color: red[500] }}/> {nbLikes}</a> 
+                            <a href="#" onClick={updateLikeBtn}>
+                                {
+                                    likedComment ?
+                                        <>  <FavoriteIcon sx={{ color: red[500] }} /> {nbLikes} </>
+                                        :
+                                        <>  <FavoriteIcon sx={{ color: grey[500] }} /> {nbLikes} </>
+
+                                }
+
+
+                            </a>
                             {(props.LoggedInUserId !== -1 && props.LoggedInUserId === props.commentObject.user_id) ?
                                 <a href="#" onClick={() => props.onDelete(props.commentObject.id)}><i className="bi bi-reply"></i> Delete</a>
                                 : null
