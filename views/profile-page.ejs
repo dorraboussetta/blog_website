@@ -1,4 +1,31 @@
 <%- include("partials/header.ejs") %>
-<h1>Profile Page</h1>
 
-<%- include("partials/footer.ejs") %>
+    <div class="container m-6 d-flex justify-content-center ">
+        <div class="card">
+            <img src=<%=img %> alt="User Profile Image" style="width:100%">
+            <div class="container p-4 pb-3">
+                <h1>
+                    <%= name %>
+                </h1>
+                <p class="title">
+                    <%= email %>
+                </p>
+                <p class="text-body-emphasis">
+                    <%= nbPosts %>
+                        <% if (nbPosts===1) { %>
+                            post
+                            <% } else { %>
+                                posts
+                                <% } %>
+                </p>
+                <form action="/edit-profile" method="get">
+                    <button type="submit" class="profile-button">Edit Profile</button>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <%- include("partials/footer.ejs") %>

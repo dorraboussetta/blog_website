@@ -170,6 +170,9 @@ app.post("/signup", async (req, res, next) => {
   const imgUrl = req.body.img_url;
   const rememberMe = req.body.rememberMe === "yes";
 
+  console.log("email typed: " + email);
+
+
   try {
     const checkEmail = await db.query("SELECT email FROM users WHERE email=$1;", [email]);
     if (checkEmail.rows.length === 0) {
@@ -179,7 +182,7 @@ app.post("/signup", async (req, res, next) => {
         } else {
           try {
             const response = await db.query("INSERT INTO users (full_name, img_url, email, password) VALUES ($1, $2, $3, $4) RETURNING *;", [fullName, imgUrl, email, hash]);
-            const user = {name : response.rows[0].full_name, image : response.rows[0].img_url, id : response.rows[0].id};
+            const user = { name: response.rows[0].full_name, image: response.rows[0].img_url, id: response.rows[0].id, email: response.rows[0].email, authenType: "local" };
             req.logIn(user, (err) => {
               if (err) {
                 return next(err);
@@ -262,8 +265,154 @@ app.get("/about", (req, res) => {
   res.render("about.ejs");
 });
 
-app.get("/profile-page", (req, res) => {
-  res.render("profile-page.ejs");
+app.get("/profile-page", async (req, res) => {
+  let nbOfPosts;
+  console.log(req.user);
+  try {
+    const result = await db.query("SELECT nb_posts FROM users WHERE id=$1;", [req.user.id]);
+    nbOfPosts = result.rows[0].nb_posts;
+  } catch (err) {
+    console.log(err);
+  }
+
+  res.render("profile-page.ejs", {
+    img: req.user.image,
+    name: req.user.name,
+    email: req.user.email,
+    nbPosts: nbOfPosts
+  });
+});
+
+app.get("/edit-profile", (req, res) => {
+
+  console.log("authenType " + req.user.authenType);
+  console.log(req.user);
+
+  res.render("edit-profile.ejs", {
+    email: req.user.email,
+    name: req.user.name,
+    image: req.user.image,
+    isGoogleAccount: req.user.authenType === "google"
+  });
+
+});
+
+app.post("/update-profile", async (req, res, next) => {
+  const formData = req.body;
+  let message;
+  let newPassword = "";
+  let userChangedPassword = true;
+  let updatedUser = {};
+
+
+
+  if (req.user.authenType === "local") {
+    if (formData.oldPassword.length === 0 && (formData.newPassword.length !== 0 || formData.confirmPassword.length !== 0)) {
+
+    } else if (formData.oldPassword.length !== 0 && (formData.newPassword.length === 0 || formData.confirmPassword.length === 0)) {
+      message = "Please enter both the new password and the confirmation.";
+
+    } else if (formData.oldPassword.length === 0 && formData.newPassword.length === 0 && formData.confirmPassword.length === 0) {
+      userChangedPassword = false;
+    } else if (formData.oldPassword.length !== 0 && formData.newPassword.length !== 0 && formData.confirmPassword.length !== 0) {
+      const result = await db.query("SELECT password FROM users WHERE id=$1", [req.user.id]);
+      if (formData.newPassword !== formData.confirmPassword) {
+        message = "Passwords don't match."
+      } else {
+        try {
+          const valid = await bcrypt.compare(formData.newPassword, result.rows[0].password);
+          if (valid) {
+            message = "New password and old password match.";
+          } else {
+            newPassword = formData.newPassword;
+            userChangedPassword = true;
+          }
+        } catch (err) {
+          console.log("Error comparing passwords: ", err);
+          message = "Error. Please try again.";
+        }
+      }
+    }
+
+  }
+
+  console.log(formData.newPassword);
+
+  if (req.user.authenType === "local" && userChangedPassword && formData.newPassword.length === 0) {
+    return res.render("edit-profile.ejs", {
+      email: req.user.email,
+      name: req.user.name,
+      image: req.user.image,
+      isGoogleAccount: false,
+      errorMessage: message
+    });
+  };
+
+  if (req.user.authenType === "local" && userChangedPassword && formData.newPassword.length > 0) {
+    try {
+      const result = await bcrypt.hash(newPassword, saltRounds);
+      console.log(result);
+
+      try {
+        const response = await db.query("UPDATE users SET full_name=$1, img_url=$2, email=$3, password=$4 WHERE id=$5 RETURNING *;", [formData.full_name, formData.img_url, formData.email, result, req.user.id]);
+        updatedUser = {
+          name: response.rows[0].full_name,
+          email: response.rows[0].email,
+          image: response.rows[0].img_url,
+          id: response.rows[0].id,
+          authenType: "local"
+
+        };
+
+        console.log("AFTER UPDATE:", updatedUser);
+
+      } catch (err) {
+        console.log(err);
+      }
+    } catch (err) {
+      return res.render("edit-profile.ejs", {
+        email: req.user.email,
+        name: req.user.name,
+        image: req.user.image,
+        isGoogleAccount: false,
+        errorMessage: "Error updating profile. Please try again."
+      });
+    }
+
+  };
+
+  if (req.user.authenType === "google" || (req.user.authenType === "local" && !userChangedPassword)) {
+    try {
+      const response = await db.query("UPDATE users SET full_name=$1, img_url=$2, email=$3 WHERE id=$4 RETURNING *;", [formData.full_name, formData.img_url, formData.email, req.user.id]);
+      updatedUser = {
+        name: response.rows[0].full_name,
+        email: response.rows[0].email,
+        image: response.rows[0].img_url,
+        id: response.rows[0].id,
+        authenType: (req.user.authenType === "google") ? "google" : "local"
+
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  console.log("RIGHT BEFORE LOGIN:", updatedUser);
+  req.logIn(updatedUser, (err) => {
+    if (err) {
+      return next(err);
+    };
+
+    req.session.save((err) => {
+      if (err) {
+        return next(err);
+      };
+      res.redirect("/profile-page");
+    })
+  })
+
+
+
 });
 
 app.get("/api/user-info", (req, res) => {
@@ -284,12 +433,12 @@ app.get("/api/user-info", (req, res) => {
 
 app.get("/api/comment-author-info", async (req, res) => {
 
-    try {
-      const commentAuthorId = await db.query("SELECT full_name, img_url FROM users WHERE id=$1", [req.query.id]);
-      res.json({ img_url: commentAuthorId.rows[0].img_url, name: commentAuthorId.rows[0].full_name });
-    } catch (err) {
-      console.log(err);
-    }
+  try {
+    const commentAuthorId = await db.query("SELECT full_name, img_url FROM users WHERE id=$1", [req.query.id]);
+    res.json({ img_url: commentAuthorId.rows[0].img_url, name: commentAuthorId.rows[0].full_name });
+  } catch (err) {
+    console.log(err);
+  }
 
 
 });
@@ -356,7 +505,7 @@ app.get("/api/get-comments", async (req, res) => {
 
 app.get("/api/update-comment-nb-likes", async (req, res) => {
   try {
-    const result = await db.query("UPDATE comments SET nb_likes = nb_likes + $1, full_timestamp=CURRENT_TIMESTAMP WHERE id=$2 RETURNING nb_likes; ", [req.query.update ,req.query.id]);
+    const result = await db.query("UPDATE comments SET nb_likes = nb_likes + $1, full_timestamp=CURRENT_TIMESTAMP WHERE id=$2 RETURNING nb_likes; ", [req.query.update, req.query.id]);
     res.json(result.rows[0].nb_likes);
   } catch (err) {
     console.log(err);
@@ -376,38 +525,38 @@ app.get("/api/delete-comment", async (req, res) => {
 });
 
 app.get("/api/get-comment-like", async (req, res) => {
-  try{
+  try {
     const result = await db.query("SELECT * FROM liked_comments WHERE comment_id = $1 AND user_id = $2;", [req.query.commentId, req.query.userId]);
     if (result.rows.length === 0) {
-      res.json({isLikedComment : false});
+      res.json({ isLikedComment: false });
     } else {
-      res.json({isLikedComment : true});
+      res.json({ isLikedComment: true });
     }
-  }catch(err){
+  } catch (err) {
     console.log(err);
     res.sendStatus(404);
   }
-}); 
+});
 
 app.get("/api/add-comment-like", async (req, res) => {
-  try{
+  try {
     const result = await db.query("INSERT INTO liked_comments (comment_id, user_id) VALUES ($1, $2);", [req.query.commentId, req.query.userId]);
     res.sendStatus(200);
-  }catch(err){
+  } catch (err) {
     console.log(err);
     res.sendStatus(404);
   }
-}); 
+});
 
 app.get("/api/delete-comment-like", async (req, res) => {
-  try{
+  try {
     const result = await db.query("DELETE FROM liked_comments WHERE comment_id = $1 AND user_id = $2;", [req.query.commentId, req.query.userId]);
     res.sendStatus(200);
-  }catch(err){
+  } catch (err) {
     console.log(err);
     res.sendStatus(404);
   }
-}); 
+});
 
 
 app.get("/api/add-bookmark", async (req, res) => {
@@ -439,18 +588,17 @@ app.get("/api/bookmarked-posts", async (req, res) => {
   } catch (err) {
     console.log(err);
   }
-}); 
+});
 
 app.get("/api/get-post", async (req, res) => {
-  try{
+  try {
     const result = await db.query("SELECT * FROM posts WHERE id=$1;", [req.query.postId]);
-    // console.log(result.rows[0]);
     res.json(result.rows[0]);
-  } catch(err){
+  } catch (err) {
     console.log(err);
   }
 
-}); 
+});
 
 app.get("/post-add", (req, res) => {
   if (req.isAuthenticated()) {
@@ -482,9 +630,16 @@ app.post("/submit-post", async (req, res) => {
     );
     newPost.id = response.rows[0].id;
 
+    try {
+      const result = await db.query("UPDATE users SET nb_posts=nb_posts + 1 WHERE id=$1;", [req.user.id]);
+    } catch (err) {
+      console.log(err);
+    }
+
   } catch (err) {
     console.log(err);
   }
+
 
   res.redirect(`/post-view?id=${newPost.id}`);
 });
@@ -547,14 +702,13 @@ passport.use(
     try {
       const result = await db.query("SELECT * FROM users WHERE email=$1", [email]);
       if (result.rows.length > 0) {
-        if (user.password === "google") {
+        if (result.rows[0].password === "google") {
           return cb(null, false, {
             message: "Sign in with your Google account."
           });
         };
-        const userSessionInfo = { id: result.rows[0].id, email: result.rows[0].email, name: result.rows[0].full_name, image: result.rows[0].img_url };
-        const user = result.rows[0];
-        const storedHashedPassword = user.password;
+        const userSessionInfo = { id: result.rows[0].id, email: result.rows[0].email, name: result.rows[0].full_name, image: result.rows[0].img_url, authenType: "local" };
+        const storedHashedPassword = result.rows[0].password;
         bcrypt.compare(password, storedHashedPassword, (err, valid) => {
           if (err) {
             console.log("Error comparing passwords: ", err);
@@ -596,13 +750,13 @@ passport.use(
           const response = await db.query("INSERT INTO users (full_name, email, password, img_url) VALUES ($1,$2,$3,$4) RETURNING *;",
             [profile.displayName, profile.emails[0].value, "google", profile.photos[0].value]);
 
-          const user = { id: response.rows[0].id, email: response.rows[0].email, name: response.rows[0].full_name, image: response.rows[0].img_url };
+          const user = { id: response.rows[0].id, email: response.rows[0].email, name: response.rows[0].full_name, image: response.rows[0].img_url, authenType: "google" };
           return cb(null, user);
         } else {
           if (result.rows[0].password !== "google") {
             return cb(null, false, { message: "Please log in using your email and password." });
           } else {
-            return cb(null, { id: result.rows[0].id, email: result.rows[0].email, name: result.rows[0].full_name, image: result.rows[0].img_url });
+            return cb(null, { id: result.rows[0].id, email: result.rows[0].email, name: result.rows[0].full_name, image: result.rows[0].img_url, authenType: "google" });
           }
 
         }

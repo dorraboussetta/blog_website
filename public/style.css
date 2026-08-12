@@ -137,8 +137,7 @@ a {
   padding-right: 10px;
 }
 
-.sign-up-btn,
-.signup-btn-form:hover {
+.sign-up-btn{
   background-color: #ffccd2;
 }
 .signup-btn-form:hover {
@@ -146,13 +145,17 @@ a {
 }
 
 .signup-btn-form,
-.signin-btn-form {
+.signin-btn-form, .delete-btn-form{
   background-color: #b3541e;
   border: none;
 }
 
+.delete-btn-form:hover{
+  background-color: #b90e0a;
+}
+
 .signup-form,
-.signin-form {
+.signin-form, .update-profile-form {
   background-color: #ffccd2;
 }
 
@@ -319,4 +322,36 @@ a {
 .bookmark-icon{
   display: flex;
   justify-content: flex-end;
+}
+
+.card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.title {
+  color: grey;
+  font-size: 18px;
+}
+
+.profile-button {
+  border: none;
+  outline: 0;
+  display: inline;
+  padding: 10px;
+  color: white;
+  background-color: #b3541e;
+  text-align: center;
+  cursor: pointer;
+  font-size: 18px;
+  border-radius: 10px;
+}
+
+
+.profile-button:hover, a:hover {
+  opacity: 0.7;
 }
