@@ -1,9 +1,12 @@
 import axios from "axios";
 import React from "react";
 import { useState } from "react";
+import { useEffect } from "react";
+import PostPreviewCard from "./PostsSrc/PostPreviewCard";
 
 function Bookmarks() {
   const [activeUserId, setActiveUserId] = useState(-1);
+  const [posts, setPosts] = useState([]);
 
   async function getActiveUserInfo() {
     try {
@@ -15,30 +18,59 @@ function Bookmarks() {
       }
     } catch (err) {
       console.log(err);
-    }
+    } 
   }
-  getActiveUserInfo();
 
   async function loadBookmarks() {
     if (activeUserId === -1) {
-        return;
+      return;
+    }; 
+    if(posts.length > 0) {
+      return;     
     }
     try {
-      const response = await axios.get("/api/display-bookmarks", {
-        params: { userId: activeUserId},
+      const response = await axios.get("/api/bookmarked-posts", {
+        params: { userId: activeUserId },
       });
-      console.log(response.data);
+  
+      const postIds = response.data; 
+ 
+      for (let i = 0; i < response.data.length; i++) {
+        try {
+          const result = await axios.get("/api/get-post", {
+            params: { postId: response.data[i].post_id},
+          });
+          setPosts((prevPosts) => {
+            return [...prevPosts, result.data];
+          });
+          console.log(posts);
+        } catch (err) {
+          console.log(err);
+        }
+      }
     } catch (err) {
       console.log(err);
     }
   }
 
-  loadBookmarks(); 
+  useEffect(() => {
+    getActiveUserInfo();
+  }, []);
 
-  return (<>
-    <h1>Here's an H1 for funzies</h1>
-  </>);
+  useEffect(() => {
+    loadBookmarks();
+  }, [activeUserId]); 
+  
+
+  return (
+    <>
+      <div className="row mb-2">
+        {posts.map((postObject) => {
+          return <PostPreviewCard post={postObject} key={postObject.id} />;
+        })}
+      </div>
+    </>
+  );
 }
 
 export default Bookmarks;
-

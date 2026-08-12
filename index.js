@@ -286,7 +286,6 @@ app.get("/api/comment-author-info", async (req, res) => {
 
     try {
       const commentAuthorId = await db.query("SELECT full_name, img_url FROM users WHERE id=$1", [req.query.id]);
-      console.log({ img_url: commentAuthorId.rows[0].img_url, name: commentAuthorId.rows[0].full_name });
       res.json({ img_url: commentAuthorId.rows[0].img_url, name: commentAuthorId.rows[0].full_name });
     } catch (err) {
       console.log(err);
@@ -398,13 +397,25 @@ app.get("/api/delete-bookmark", async (req, res) => {
   }
 });
 
-app.get("/api/display-bookmarks", async (req, res) => {
+app.get("/api/bookmarked-posts", async (req, res) => {
   try {
     const result = await db.query("SELECT post_id FROM bookmarks WHERE user_id=$1;", [req.query.userId]);
-    //console.log(result.rows);
+    console.log(result.rows);
+    res.json(result.rows);
   } catch (err) {
     console.log(err);
   }
+}); 
+
+app.get("/api/get-post", async (req, res) => {
+  try{
+    const result = await db.query("SELECT * FROM posts WHERE id=$1;", [req.query.postId]);
+    // console.log(result.rows[0]);
+    res.json(result.rows[0]);
+  } catch(err){
+    console.log(err);
+  }
+
 })
 
 
