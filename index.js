@@ -15,8 +15,6 @@ const app = express();
 const port = 3000;
 const pgSession = connectPgSimple(session);
 const saltRounds = 10;
-var posts = [];
-var numPosts = 0;
 
 env.config({ quiet: true });
 
@@ -236,7 +234,7 @@ app.get("/logout", (req, res) => {
 
 
 app.get("/", (req, res) => {
-  res.render("index.ejs", { posts: posts });
+  res.render("index.ejs");
 });
 
 app.get("/my-posts", (req, res) => {
@@ -381,7 +379,7 @@ app.post("/update-profile", async (req, res, next) => {
 
   };
 
-  if (req.user.authenType === "google" || (req.user.authenType === "local" && !userChangedPassword)) {
+  if (req.user.authenType === "local" && !userChangedPassword) {
     try {
       const response = await db.query("UPDATE users SET full_name=$1, img_url=$2, email=$3 WHERE id=$4 RETURNING *;", [formData.full_name, formData.img_url, formData.email, req.user.id]);
       updatedUser = {
@@ -389,7 +387,7 @@ app.post("/update-profile", async (req, res, next) => {
         email: response.rows[0].email,
         image: response.rows[0].img_url,
         id: response.rows[0].id,
-        authenType: (req.user.authenType === "google") ? "google" : "local"
+        authenType: "local"
 
       }
     } catch (err) {
@@ -397,7 +395,22 @@ app.post("/update-profile", async (req, res, next) => {
     }
   };
 
-  console.log("RIGHT BEFORE LOGIN:", updatedUser);
+  if (req.user.authenType === "google") {
+    try {
+      const response = await db.query("UPDATE users SET img_url=$1 RETURNING *;", [formData.img_url, req.user.id]);
+      updatedUser = {
+        name: response.rows[0].full_name,
+        email: response.rows[0].email,
+        image: response.rows[0].img_url,
+        id: response.rows[0].id,
+        authenType: "google"
+
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   req.logIn(updatedUser, (err) => {
     if (err) {
       return next(err);
@@ -414,6 +427,22 @@ app.post("/update-profile", async (req, res, next) => {
 
 
 });
+
+app.get("/delete-profile", async (req,res, next) => {
+
+  try{
+    const result = await db.query("DELETE FROM users WHERE id=$1", [req.user.id]);
+  }catch(err){
+    console.log(err);
+  }
+
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    };
+    res.redirect("/");
+  })
+})
 
 app.get("/api/user-info", (req, res) => {
 
@@ -445,7 +474,7 @@ app.get("/api/comment-author-info", async (req, res) => {
 
 app.get("/api/my-posts", async (req, res) => {
   try {
-    const response = await db.query("SELECT * FROM posts WHERE user_id=$1 ORDER by full_timestamp DESC;", [req.user.id]);
+    const response = await db.query("SELECT posts.*, users.full_name FROM posts  JOIN users ON posts.user_id = users.id WHERE user_id=$1 ORDER by full_timestamp DESC;", [req.user.id]);
     res.json({ myPosts: response.rows });
   } catch (err) {
     console.log(err);
@@ -457,7 +486,7 @@ app.get("/api/all-posts", async (req, res) => {
   let posts_array;
 
   try {
-    const result = await db.query("SELECT * FROM posts ORDER by full_timestamp DESC;");
+    const result = await db.query("SELECT posts.*, users.full_name FROM posts JOIN users ON posts.user_id = users.id ORDER by full_timestamp DESC;");
     posts_array = result.rows;
   } catch (err) {
     console.log(err);
@@ -469,7 +498,7 @@ app.get("/api/all-posts", async (req, res) => {
 app.get("/api/full-post", async (req, res) => {
 
   try {
-    const response = await db.query("SELECT * FROM posts WHERE id=$1", [req.query.id]);
+    const response = await db.query("SELECT posts.*, users.full_name FROM posts JOIN users ON posts.user_id = users.id WHERE posts.id=$1", [req.query.id]);
     res.send({ post: response.rows[0] });
   } catch (err) {
     console.log(err);
@@ -592,7 +621,7 @@ app.get("/api/bookmarked-posts", async (req, res) => {
 
 app.get("/api/get-post", async (req, res) => {
   try {
-    const result = await db.query("SELECT * FROM posts WHERE id=$1;", [req.query.postId]);
+    const result = await db.query("SELECT posts.*, users.full_name FROM posts JOIN users ON posts.user_id = users.id WHERE posts.id=$1;", [req.query.postId]);
     res.json(result.rows[0]);
   } catch (err) {
     console.log(err);
@@ -650,7 +679,7 @@ app.get("/post-view", (req, res) => {
 });
 
 app.get("/return-home", (req, res) => {
-  res.render("index.ejs", { posts: posts });
+  res.render("index.ejs");
 });
 
 app.get("/post-update", async (req, res) => {
@@ -658,7 +687,7 @@ app.get("/post-update", async (req, res) => {
   let loadedPost;
 
   try {
-    const result = await db.query("SELECT * FROM posts WHERE id=$1", [id]);
+    const result = await db.query("SELECT posts.*, users.full_name FROM posts JOIN users ON posts.user_id = users.id WHERE posts.id=$1", [id]);
     loadedPost = result.rows[0];
   } catch (err) {
     console.log(err);

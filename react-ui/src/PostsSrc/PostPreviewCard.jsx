@@ -9,7 +9,7 @@ function PostPreviewCard(props){
                 <div className="col p-4 d-flex flex-column position-static">
                     <strong className="d-inline-block mb-2 text-success-emphasis">{props.post.category}</strong>
                     <h3 className="mb-0">{props.post.title}</h3>
-                    <div className="mb-1 text-body-secondary">{props.post.date}, by <strong><i>{props.post.author}</i></strong></div>
+                    <div className="mb-1 text-body-secondary">{props.post.date}, by <strong><i>{props.post.full_name}</i></strong></div>
 
                     <p className="card-text mb-auto">
                     {props.post.preview}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function UserDropdown() {
@@ -12,12 +12,15 @@ function UserDropdown() {
             const response = await axios.get("/api/user-info"); 
             setName(response.data.name);
             setImage(response.data.image);
-        }catch(err){
+        }catch(err){ 
             console.log(err);
         }
     };
 
-    getCred();
+    useEffect(() => {
+     getCred();   
+    }, []);
+    
 
     return (
         <div className="flex-shrink-0 dropdown">

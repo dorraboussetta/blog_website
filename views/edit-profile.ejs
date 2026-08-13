@@ -4,33 +4,37 @@
         <div class="signup-form pb-4">
             <form class="p-4 p-md-5 pb-3 pb-md-3 border rounded-3" action="/update-profile" method="post">
                 <div class="form-floating mb-3">
-                    <input type="text" name="full_name" class="form-control" value=<%=name %> id="full_name"
-                    placeholder="Full Name"
-                    fdprocessedid="t8e1p6" required>
+                    <input type="text" name="full_name" class="form-control" value="<%=name %>" id="full_name"
+                        placeholder="Full Name" fdprocessedid="t8e1p6" <%=locals.isGoogleAccount? "disabled"
+                        : "required" %>>
                     <label for="full_name">Full Name</label>
                 </div>
 
-                <div class="form-floating mb-3">
-                    <input type="email" name="email" class="form-control" value=<%=email %> id="floatingInput"
-                    placeholder="name@example.com" fdprocessedid="nx384" required>
-                    <label for="floatingInput">Email</label>
-                </div>
                 <% if(!locals.isGoogleAccount) { %>
                     <div class="form-floating mb-3">
+                        <input type="email" name="email" class="form-control" value=<%=email %> id="floatingInput"
+                        placeholder="name@example.com" fdprocessedid="nx384" <%= locals.isGoogleAccount? "disabled"
+                            : "required" %>>
+                            <label for="floatingInput">Email</label>
+                    </div>
+                    <div class="form-floating mb-3">
                         <input type="password" name="oldPassword" class="form-control" id="floatingPassword"
-                            placeholder="Password" fdprocessedid="t8e1p6">
+                            placeholder="Password" fdprocessedid="t8e1p6" <%=locals.isGoogleAccount? "disabled" : null
+                            %>>
                         <label for="floatingPassword">Old Password</label>
                     </div>
 
                     <div class="form-floating mb-3">
                         <input type="password" name="newPassword" class="form-control" id="floatingPassword"
-                            placeholder="Password" fdprocessedid="t8e1p6">
+                            placeholder="Password" fdprocessedid="t8e1p6" <%=locals.isGoogleAccount? "disabled" : null
+                            %>>
                         <label for="floatingPassword">New Password</label>
                     </div>
 
                     <div class="form-floating mb-3">
                         <input type="password" name="confirmPassword" class="form-control" id="floatingPassword"
-                            placeholder="Password" fdprocessedid="t8e1p6">
+                            placeholder="Password" fdprocessedid="t8e1p6" <%=locals.isGoogleAccount? "disabled" : null
+                            %>>
                         <label for="floatingPassword">Confirm Password</label>
                     </div>
                     <% } %>
@@ -51,16 +55,39 @@
                                 </div>
 
             </form>
-            <div class="container d-flex flex-row justify-content-center">
-                <a class="delete-profile-link text-center" href="/delete-profile-confirmation"
-                    style="color: #b90e0a; text-decoration: none;">
-                    Delete Profile
-                </a>
+            <div class="container d-flex flex-row justify-content-center mt-5">
+                <button class="btn delete-toggle-btn" data-bs-toggle="modal" data-bs-target="#confirmModal">
+                    Delete Item
+                </button>
             </div>
 
+            <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmModalLabel">Confirm Deletion</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <i class="fas fa-exclamation-triangle warning-icon"></i>
+                            <p class="mb-0">Are you sure you want to delete this item?<br>This action cannot be undone.
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </button>
+                            <form action="/delete-profile" method="get">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash-alt me-2"></i>Delete
+                                </button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
-
-
-    </div>
-    <%- include("partials/footer.ejs") %>
+        <%- include("partials/footer.ejs") %>

@@ -36,7 +36,8 @@ function FullPostCard(props) {
     } catch (err) {
       console.log(err);
     }
-  }
+  }; 
+
 
   async function getCred() {
     try {
@@ -52,7 +53,6 @@ function FullPostCard(props) {
       const response = await axios.get("/api/add-bookmark", {
         params: { postId: postId, userId: userId },
       });
-      console.log(response.data);
       return response.data;
     } catch (err) {
       console.log(err);
@@ -70,7 +70,6 @@ function FullPostCard(props) {
     }
   }; 
 
-  console.log(bookmarkAdded);
 
   function handleClick() {
 
@@ -124,7 +123,7 @@ function FullPostCard(props) {
           {" "}
           {post.date} at {post.time}, by{" "}
           <i>
-            <strong>{post.author}</strong>
+            <strong>{post.full_name}</strong>
           </i>{" "}
         </p>
         <hr />

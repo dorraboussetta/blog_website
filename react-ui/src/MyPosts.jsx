@@ -19,7 +19,7 @@ function MyPosts(){
         loadPosts();
     }, []);
 
-
+    console.log(posts);
     return (
         <div className="row mb-2">
             {posts.map((postObject) => {
