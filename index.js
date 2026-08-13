@@ -114,12 +114,12 @@ app.get("/auth/google/my-posts", (req, res, next) => {
 
 
 
-
+//Login page get route
 app.get("/login-page", (req, res) => {
   res.render("login.ejs");
 });
 
-
+//Login form POST route
 app.post("/login", (req, res, next) => {
 
   const rememberMe = req.body.rememberMe === "yes";
@@ -161,6 +161,7 @@ app.post("/login", (req, res, next) => {
 }
 );
 
+//Signup form POST route
 app.post("/signup", async (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -232,10 +233,13 @@ app.get("/logout", (req, res) => {
   })
 });
 
-
 app.get("/", (req, res) => {
   res.render("index.ejs");
 });
+
+app.get("/search-page", (req, res) => {
+  res.render("search-page.ejs");
+})
 
 app.get("/my-posts", (req, res) => {
   if (req.isAuthenticated()) {
@@ -256,7 +260,7 @@ app.get("/bookmarks", (req, res) => {
 });
 
 app.get("/faqs", (req, res) => {
-  res.render("faqs.ejs");
+  res.render("faqs.ejs", {faqs : faqs});
 });
 
 app.get("/about", (req, res) => {
@@ -428,11 +432,11 @@ app.post("/update-profile", async (req, res, next) => {
 
 });
 
-app.get("/delete-profile", async (req,res, next) => {
+app.get("/delete-profile", async (req, res, next) => {
 
-  try{
+  try {
     const result = await db.query("DELETE FROM users WHERE id=$1", [req.user.id]);
-  }catch(err){
+  } catch (err) {
     console.log(err);
   }
 
@@ -485,14 +489,25 @@ app.get("/api/all-posts", async (req, res) => {
 
   let posts_array;
 
+  if (req.query.authorName) {
+    try {
+      const result = await db.query("SELECT posts.*, users.full_name FROM posts JOIN users ON posts.user_id = users.id WHERE LOWER(full_name) LIKE '%' || $1 || '%' ORDER by full_timestamp DESC;", [req.query.authorName.toLowerCase()]);
+      console.log(result.rows);
+      return res.json({ posts: result.rows });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   try {
     const result = await db.query("SELECT posts.*, users.full_name FROM posts JOIN users ON posts.user_id = users.id ORDER by full_timestamp DESC;");
     posts_array = result.rows;
+    res.json({ posts: posts_array });
   } catch (err) {
     console.log(err);
   }
 
-  res.json({ posts: posts_array });
+
 });
 
 app.get("/api/full-post", async (req, res) => {
@@ -640,6 +655,8 @@ app.get("/post-add", (req, res) => {
 
 app.post("/submit-post", async (req, res) => {
   const user = req.user;
+
+  console.log(req.body);
 
   let newPost = {
     title: req.body["title"],
@@ -807,3 +824,71 @@ passport.deserializeUser((user, cb) => {
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
+
+const faqs = [
+  {
+    question: "What is BlogIt?",
+    answer:
+      "BlogIt is a blogging platform where users can discover posts, share their own ideas, interact with other readers, and explore content across different categories.",
+  },
+  {
+    question: "Do I need an account to read posts?",
+    answer:
+      "No. You can browse and read published posts without creating an account. Some interactive features may require you to log in.",
+  },
+  {
+    question: "How do I create an account?",
+    answer:
+      "You can register using your email and password or sign in with your Google account.",
+  },
+  {
+    question: "How do I publish a post?",
+    answer:
+      "Once you are logged in, you can create a new post by adding a title, choosing a category, writing your content, and submitting it for publication.",
+  },
+  {
+    question: "What categories can I write about?",
+    answer:
+      "BlogIt supports a variety of topics, including Lifestyle, Travel, Money, Health, Pets, Personal Growth, Food & Curiosities, Programming, Education, Psychology, and more.",
+  },
+  {
+    question: "Can I find posts from a specific author?",
+    answer:
+      "Yes. You can use the search bar to search for an author and view posts written by them.",
+  },
+  {
+    question: "Can I comment on posts?",
+    answer:
+      "Yes. Logged-in users can leave comments on posts and join discussions with other readers.",
+  },
+  {
+    question: "Can I like comments?",
+    answer:
+      "Yes. You can like comments you find helpful, interesting, or entertaining.",
+  },
+  {
+    question: "What are bookmarks?",
+    answer:
+      "Bookmarks let you save posts that you want to return to later. Your bookmarked posts are collected in one place for easy access.",
+  },
+  {
+    question: "Where can I find the posts I have written?",
+    answer:
+      "Your own published posts are available in the My Posts section when you are logged in.",
+  },
+  {
+    question: "Can I update my profile information?",
+    answer:
+      "Yes. You can update supported profile information from your profile page. Some information may work differently if your account was created through Google.",
+  },
+  {
+    question: "Can I use Google to sign in?",
+    answer:
+      "Yes. BlogIt supports Google authentication, allowing you to sign in using your Google account instead of creating a separate password.",
+  },
+  {
+    question: "Is BlogIt only for professional writers?",
+    answer:
+      "Not at all. BlogIt is for anyone who wants to share ideas, experiences, knowledge, stories, or things they find interesting.",
+  },
+];

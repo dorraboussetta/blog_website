@@ -43,7 +43,6 @@ function Bookmarks() {
           setPosts((prevPosts) => {
             return [...prevPosts, result.data];
           });
-          console.log(posts);
         } catch (err) {
           console.log(err);
         }

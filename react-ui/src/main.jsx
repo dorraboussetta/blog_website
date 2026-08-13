@@ -7,6 +7,7 @@ import MyPosts from "./MyPosts";
 import FullPostCard from "./PostsSrc/FullPostCard";
 import CommentsSection from "./CommentsSection";
 import Bookmarks from "./Bookmarks";
+import SearchedPosts from "./SearchedPosts";
 
 const UserAreaRoot = document.getElementById('UserArea');
 const HomePagePostsRoot = document.getElementById('HomePagePosts');
@@ -14,9 +15,13 @@ const MyPostsRoot = document.getElementById('MyPosts');
 const FullPostCardRoot = document.getElementById('FullPostCard');
 const CommentsSectionRoot = document.getElementById('CommentsSection');
 const BookmarksRoot = document.getElementById('Bookmarks');
+const SearchedPostsRoot = document.getElementById("SearchedPosts");
 
 const params = new URLSearchParams(window.location.search);
 const PostId = params.get("id");
+const nameOfAuthor = params.get("authorName");
+
+console.log("Post id is : " + PostId);
 
 if (UserAreaRoot) {
     createRoot(UserAreaRoot).render( <UserArea />);
@@ -40,6 +45,10 @@ if (CommentsSectionRoot) {
 
 if (BookmarksRoot) {
     createRoot(BookmarksRoot).render(<Bookmarks />);
+};
+
+if (SearchedPostsRoot) {
+    createRoot(SearchedPostsRoot).render(<SearchedPosts authorName = {nameOfAuthor} />);
 };
 
 

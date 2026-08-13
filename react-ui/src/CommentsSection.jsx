@@ -37,7 +37,6 @@ function CommentsSection(props) {
     event.preventDefault();
     try {
       const result = await axios.get("/api/delete-comment?id=" + String(id));
-      console.log(id);
       loadComments();
     } catch (err) {
       console.log(err);
