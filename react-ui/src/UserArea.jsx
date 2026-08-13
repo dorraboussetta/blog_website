@@ -1,3 +1,5 @@
+//Loads and displays the user area
+
 import React from 'react';
 import UserDropdown from './LoginSrc/UserDropdown.jsx'
 import LoginButton from './LoginSrc/LoginButton.jsx'

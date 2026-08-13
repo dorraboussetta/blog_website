@@ -1,3 +1,5 @@
+//Mounts the react components
+
 import "vite/modulepreload-polyfill";
 import React from 'react'
 import { createRoot } from 'react-dom/client'

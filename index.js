@@ -10,7 +10,7 @@ import bcrypt from "bcrypt";
 import connectPgSimple from "connect-pg-simple";
 
 
-
+//Environment variables and package setup
 const app = express();
 const port = 3000;
 const pgSession = connectPgSimple(session);
@@ -18,11 +18,12 @@ const saltRounds = 10;
 
 env.config({ quiet: true });
 
-
 app.use(express.static("public"));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
+
+//PostgreSQL database connection
 
 const db = new pg.Client({
   user: process.env.PG_USER,
@@ -31,6 +32,8 @@ const db = new pg.Client({
   password: process.env.PG_PASSWORD,
   port: process.env.PG_PORT,
 });
+
+//Session setup using PostgreSQL session store
 
 const sessionPool = new pg.Pool({
   user: process.env.PG_USER,
@@ -58,6 +61,7 @@ app.use(
   })
 );
 
+//Passport authentification setup
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -82,6 +86,7 @@ app.get("/auth/google", (req, res, next) => {
 
 });
 
+//Google OAuth routes
 app.get("/auth/google/my-posts", (req, res, next) => {
   passport.authenticate("google", (err, user, info) => {
     if (err) {
@@ -217,10 +222,12 @@ app.post("/signup", async (req, res, next) => {
 
 });
 
+//Gets the signup page
 app.get("/signup-page", (req, res) => {
   res.render("signup.ejs");
 });
 
+//Logs the user out
 app.get("/logout", (req, res) => {
   req.logout(function (err) {
     if (err) {
@@ -230,14 +237,17 @@ app.get("/logout", (req, res) => {
   })
 });
 
+//Gets the homepage
 app.get("/", (req, res) => {
   res.render("index.ejs");
 });
 
+//Gets the search page
 app.get("/search-page", (req, res) => {
   res.render("search-page.ejs");
 })
 
+//Gets My posts page
 app.get("/my-posts", (req, res) => {
   if (req.isAuthenticated()) {
     res.render("my-posts.ejs");
@@ -247,6 +257,7 @@ app.get("/my-posts", (req, res) => {
 
 });
 
+//Gets bookmarks page
 app.get("/bookmarks", (req, res) => {
   if (req.isAuthenticated()) {
     res.render("bookmarks.ejs");
@@ -256,14 +267,17 @@ app.get("/bookmarks", (req, res) => {
 
 });
 
+//Gets faqs page
 app.get("/faqs", (req, res) => {
   res.render("faqs.ejs", {faqs : faqs});
 });
 
+//Gets about page
 app.get("/about", (req, res) => {
   res.render("about.ejs");
 });
 
+//Gets profile page
 app.get("/profile-page", async (req, res) => {
   let nbOfPosts;
   try {
@@ -281,6 +295,7 @@ app.get("/profile-page", async (req, res) => {
   });
 });
 
+//Gets edit profile page
 app.get("/edit-profile", (req, res) => {
 
   res.render("edit-profile.ejs", {
@@ -292,6 +307,7 @@ app.get("/edit-profile", (req, res) => {
 
 });
 
+//Updates profile information
 app.post("/update-profile", async (req, res, next) => {
   const formData = req.body;
   let message;
@@ -421,6 +437,7 @@ app.post("/update-profile", async (req, res, next) => {
 
 });
 
+//Deletes profile
 app.get("/delete-profile", async (req, res, next) => {
 
   try {
@@ -437,6 +454,7 @@ app.get("/delete-profile", async (req, res, next) => {
   })
 })
 
+//Sends the logged in user's id, name, image, and login status
 app.get("/api/user-info", (req, res) => {
 
   if (req.isAuthenticated()) {
@@ -453,6 +471,7 @@ app.get("/api/user-info", (req, res) => {
   }
 });
 
+//Sends comments author info
 app.get("/api/comment-author-info", async (req, res) => {
 
   try {
@@ -465,6 +484,7 @@ app.get("/api/comment-author-info", async (req, res) => {
 
 });
 
+//Sends the posts of the logged in user
 app.get("/api/my-posts", async (req, res) => {
   try {
     const response = await db.query("SELECT posts.*, users.full_name FROM posts  JOIN users ON posts.user_id = users.id WHERE user_id=$1 ORDER by full_timestamp DESC;", [req.user.id]);
@@ -474,6 +494,7 @@ app.get("/api/my-posts", async (req, res) => {
   }
 });
 
+//Sends all posts in the database or the post written by a specific author
 app.get("/api/all-posts", async (req, res) => {
 
   let posts_array;
@@ -498,6 +519,7 @@ app.get("/api/all-posts", async (req, res) => {
 
 });
 
+//Gets full post information from database
 app.get("/api/full-post", async (req, res) => {
 
   try {
@@ -508,6 +530,7 @@ app.get("/api/full-post", async (req, res) => {
   }
 });
 
+//Submits a comment to the database
 app.post("/api/submit-comment", async (req, res) => {
 
   try {
@@ -525,6 +548,7 @@ app.post("/api/submit-comment", async (req, res) => {
   res.redirect(`/post-view?id=${req.body.id}`)
 });
 
+//Sends comments from database
 app.get("/api/get-comments", async (req, res) => {
   try {
     const result = await db.query("SELECT * FROM comments WHERE post_id=$1 ORDER BY full_timestamp DESC", [req.query.id]);
@@ -535,6 +559,7 @@ app.get("/api/get-comments", async (req, res) => {
 
 });
 
+//Updates the number of likes column of the comments table
 app.get("/api/update-comment-nb-likes", async (req, res) => {
   try {
     const result = await db.query("UPDATE comments SET nb_likes = nb_likes + $1, full_timestamp=CURRENT_TIMESTAMP WHERE id=$2 RETURNING nb_likes; ", [req.query.update, req.query.id]);
@@ -545,6 +570,7 @@ app.get("/api/update-comment-nb-likes", async (req, res) => {
 
 });
 
+//Deletes a comment
 app.get("/api/delete-comment", async (req, res) => {
   try {
     const result = await db.query("DELETE FROM comments WHERE id=$1 RETURNING *;", [req.query.id]);
@@ -556,6 +582,7 @@ app.get("/api/delete-comment", async (req, res) => {
 
 });
 
+//Sends a comment's nb of likes
 app.get("/api/get-comment-like", async (req, res) => {
   try {
     const result = await db.query("SELECT * FROM liked_comments WHERE comment_id = $1 AND user_id = $2;", [req.query.commentId, req.query.userId]);
@@ -570,6 +597,7 @@ app.get("/api/get-comment-like", async (req, res) => {
   }
 });
 
+//Adds a comment's nb of likes to database
 app.get("/api/add-comment-like", async (req, res) => {
   try {
     const result = await db.query("INSERT INTO liked_comments (comment_id, user_id) VALUES ($1, $2);", [req.query.commentId, req.query.userId]);
@@ -580,6 +608,7 @@ app.get("/api/add-comment-like", async (req, res) => {
   }
 });
 
+//Deletes a comment's like from database
 app.get("/api/delete-comment-like", async (req, res) => {
   try {
     const result = await db.query("DELETE FROM liked_comments WHERE comment_id = $1 AND user_id = $2;", [req.query.commentId, req.query.userId]);
@@ -590,7 +619,7 @@ app.get("/api/delete-comment-like", async (req, res) => {
   }
 });
 
-
+//Adds a bookmark to database
 app.get("/api/add-bookmark", async (req, res) => {
 
   try {
@@ -602,6 +631,7 @@ app.get("/api/add-bookmark", async (req, res) => {
   }
 });
 
+//Deletes a bookmark from database
 app.get("/api/delete-bookmark", async (req, res) => {
 
   try {
@@ -613,6 +643,7 @@ app.get("/api/delete-bookmark", async (req, res) => {
   }
 });
 
+//Displays all bookmarked posts
 app.get("/api/bookmarked-posts", async (req, res) => {
   try {
     const result = await db.query("SELECT post_id FROM bookmarks WHERE user_id=$1;", [req.query.userId]);
@@ -622,6 +653,7 @@ app.get("/api/bookmarked-posts", async (req, res) => {
   }
 });
 
+//Gets a particular post
 app.get("/api/get-post", async (req, res) => {
   try {
     const result = await db.query("SELECT posts.*, users.full_name FROM posts JOIN users ON posts.user_id = users.id WHERE posts.id=$1;", [req.query.postId]);
@@ -632,6 +664,7 @@ app.get("/api/get-post", async (req, res) => {
 
 });
 
+//Gets the add  post page
 app.get("/post-add", (req, res) => {
   if (req.isAuthenticated()) {
     res.render("post-add.ejs");
@@ -641,6 +674,7 @@ app.get("/post-add", (req, res) => {
 
 });
 
+//Submits a post to database
 app.post("/submit-post", async (req, res) => {
   const user = req.user;
 
@@ -676,15 +710,18 @@ app.post("/submit-post", async (req, res) => {
   res.redirect(`/post-view?id=${newPost.id}`);
 });
 
+//Gets the post view page
 app.get("/post-view", (req, res) => {
   res.render("post-view.ejs");
 
 });
 
+//Gets the homepage through a button
 app.get("/return-home", (req, res) => {
   res.render("index.ejs");
 });
 
+//Gets the post update page
 app.get("/post-update", async (req, res) => {
   const id = Number(req.query.id);
   let loadedPost;
@@ -698,6 +735,7 @@ app.get("/post-update", async (req, res) => {
   res.render("post-update.ejs", { post: loadedPost });
 });
 
+//Submits post update to database
 app.post("/update-post", async (req, res) => {
   const id = Number(req.body["id"]);
 
@@ -716,6 +754,7 @@ app.post("/update-post", async (req, res) => {
   res.redirect(`/post-view?id=${id}`);
 });
 
+//Deletes a post
 app.post("/delete-post", async (req, res) => {
   const id = req.body["id"];
 
@@ -728,6 +767,7 @@ app.post("/delete-post", async (req, res) => {
   res.redirect("/my-posts");
 });
 
+//Passport local strategy
 passport.use(
   "local",
   new Strategy({ usernameField: "email" }, async function (email, password, cb) {
@@ -765,6 +805,7 @@ passport.use(
   })
 );
 
+//Passport google strategy
 passport.use(
   "google",
   new GoogleStrategy(
@@ -811,6 +852,7 @@ app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
 
+//faqs page data
 const faqs = [
   {
     question: "What is BlogIt?",

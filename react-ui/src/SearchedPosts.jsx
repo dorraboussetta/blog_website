@@ -1,3 +1,5 @@
+//Loads and displays searched posts
+
 import React from "react";
 import PostPreviewCard from "./PostsSrc/PostPreviewCard";
 import axios from "axios";

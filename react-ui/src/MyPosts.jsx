@@ -1,3 +1,5 @@
+//Loads and displays the logged in user's posts
+
 import axios from "axios";
 import PostPreviewCard from "./PostsSrc/PostPreviewCard";
 import { useEffect, useState } from "react";

@@ -1,3 +1,5 @@
+//Loads and displays the comment section
+
 import CommentForm from "./PostsSrc/CommentForm";
 import CommentCard from "./PostsSrc/CommentCard";
 import { useEffect, useState } from "react";
