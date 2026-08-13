@@ -21,8 +21,6 @@ const params = new URLSearchParams(window.location.search);
 const PostId = params.get("id");
 const nameOfAuthor = params.get("authorName");
 
-console.log("Post id is : " + PostId);
-
 if (UserAreaRoot) {
     createRoot(UserAreaRoot).render( <UserArea />);
 };

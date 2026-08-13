@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 
 function SearchedPosts(props) {
     const [posts, setPosts] = useState([]);
-    console.log(props.authorName);
 
     useEffect(() => {
        

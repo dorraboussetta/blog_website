@@ -169,9 +169,6 @@ app.post("/signup", async (req, res, next) => {
   const imgUrl = req.body.img_url;
   const rememberMe = req.body.rememberMe === "yes";
 
-  console.log("email typed: " + email);
-
-
   try {
     const checkEmail = await db.query("SELECT email FROM users WHERE email=$1;", [email]);
     if (checkEmail.rows.length === 0) {
@@ -269,7 +266,6 @@ app.get("/about", (req, res) => {
 
 app.get("/profile-page", async (req, res) => {
   let nbOfPosts;
-  console.log(req.user);
   try {
     const result = await db.query("SELECT nb_posts FROM users WHERE id=$1;", [req.user.id]);
     nbOfPosts = result.rows[0].nb_posts;
@@ -286,9 +282,6 @@ app.get("/profile-page", async (req, res) => {
 });
 
 app.get("/edit-profile", (req, res) => {
-
-  console.log("authenType " + req.user.authenType);
-  console.log(req.user);
 
   res.render("edit-profile.ejs", {
     email: req.user.email,
@@ -338,8 +331,6 @@ app.post("/update-profile", async (req, res, next) => {
 
   }
 
-  console.log(formData.newPassword);
-
   if (req.user.authenType === "local" && userChangedPassword && formData.newPassword.length === 0) {
     return res.render("edit-profile.ejs", {
       email: req.user.email,
@@ -353,7 +344,6 @@ app.post("/update-profile", async (req, res, next) => {
   if (req.user.authenType === "local" && userChangedPassword && formData.newPassword.length > 0) {
     try {
       const result = await bcrypt.hash(newPassword, saltRounds);
-      console.log(result);
 
       try {
         const response = await db.query("UPDATE users SET full_name=$1, img_url=$2, email=$3, password=$4 WHERE id=$5 RETURNING *;", [formData.full_name, formData.img_url, formData.email, result, req.user.id]);
@@ -366,7 +356,6 @@ app.post("/update-profile", async (req, res, next) => {
 
         };
 
-        console.log("AFTER UPDATE:", updatedUser);
 
       } catch (err) {
         console.log(err);
@@ -492,7 +481,6 @@ app.get("/api/all-posts", async (req, res) => {
   if (req.query.authorName) {
     try {
       const result = await db.query("SELECT posts.*, users.full_name FROM posts JOIN users ON posts.user_id = users.id WHERE LOWER(full_name) LIKE '%' || $1 || '%' ORDER by full_timestamp DESC;", [req.query.authorName.toLowerCase()]);
-      console.log(result.rows);
       return res.json({ posts: result.rows });
     } catch (err) {
       console.log(err);
@@ -655,8 +643,6 @@ app.get("/post-add", (req, res) => {
 
 app.post("/submit-post", async (req, res) => {
   const user = req.user;
-
-  console.log(req.body);
 
   let newPost = {
     title: req.body["title"],
