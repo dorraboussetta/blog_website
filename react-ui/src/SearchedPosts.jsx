@@ -22,7 +22,6 @@ function SearchedPosts(props) {
         loadPosts();
     }, [props.authorName]);
 
-    console.log(posts);
     return (
         <>
             <h5 className="my-3 text-body-secondary"  >{posts.length === 1 ?
