@@ -15,7 +15,7 @@ function PostPreviewCard(props){
                     {props.post.preview}
                     </p>
 
-                    <a href={"/post-view?id=" + props.post.id} className="icon-link gap-1 icon-link-hover stretched-link post-view-link">
+                    <a href={"/post-view?id=" + props.post.id} className="icon-link continue-reading-tag gap-1 icon-link-hover stretched-link post-view-link">
                     Continue reading...
                     <svg className="bi" aria-hidden="true">
                         <use xlink:href="#chevron-right"></use>

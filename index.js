@@ -269,7 +269,7 @@ app.get("/bookmarks", (req, res) => {
 
 //Gets faqs page
 app.get("/faqs", (req, res) => {
-  res.render("faqs.ejs", {faqs : faqs});
+  res.render("faqs.ejs", { faqs: faqs });
 });
 
 //Gets about page
@@ -653,6 +653,20 @@ app.get("/api/bookmarked-posts", async (req, res) => {
   }
 });
 
+app.get("/api/is-bookmarked",  async (req,res) => {
+
+  try{
+    const result = await db.query("SELECT * FROM bookmarks WHERE user_id = $1 AND post_id = $2;", [req.query.userId, req.query.postId]); 
+    if (result.rows.length === 0) {
+      res.json(false);
+    } else {
+      res.json(true);
+    }
+  }catch{
+    console.log(err);
+  }
+})
+
 //Gets a particular post
 app.get("/api/get-post", async (req, res) => {
   try {
@@ -677,6 +691,7 @@ app.get("/post-add", (req, res) => {
 //Submits a post to database
 app.post("/submit-post", async (req, res) => {
   const user = req.user;
+  console.log("triggered!");
 
   let newPost = {
     title: req.body["title"],
@@ -685,14 +700,13 @@ app.post("/submit-post", async (req, res) => {
     preview: req.body["content"].slice(0, 135) + "...",
     date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
     time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
-    author: user.name,
     user_id: user.id,
   };
-
+ 
 
   try {
-    const response = await db.query("INSERT INTO posts (title, category, author, content, time, date, user_id, preview) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id;",
-      [newPost.title, newPost.category, newPost.author, newPost.content, newPost.time, newPost.date, newPost.user_id, newPost.preview]
+    const response = await db.query("INSERT INTO posts (title, category, content, time, date, user_id, preview) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id;",
+      [newPost.title, newPost.category, newPost.content, newPost.time, newPost.date, newPost.user_id, newPost.preview]
     );
     newPost.id = response.rows[0].id;
 

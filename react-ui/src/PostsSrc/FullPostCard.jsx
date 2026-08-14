@@ -15,6 +15,17 @@ function FullPostCard(props) {
   const [bookmarkAdded, setBookmarkAdded] = useState(false);
   const [activeUserId, setActiveUserId] = useState(-1);
 
+  async function isPostBookmarked(userId, postId){
+    try{
+      const response = await axios.get("/api/is-bookmarked", {params : {postId : postId, userId : userId}});
+      setBookmarkAdded(response.data);
+      console.log("is current post bookmarked by the logged in user: "  + response.data);
+
+    }catch{
+      console.log(err);
+    }
+  }; 
+
   async function getActiveUserInfo() {
     try {
       const response = await axios.get("/api/user-info");
@@ -100,6 +111,13 @@ function FullPostCard(props) {
     }
     getCred();
   }, [post.user_id]);
+
+  useEffect(() => {
+    if (activeUserId === -1) {
+      return;
+    }
+    isPostBookmarked(activeUserId, post.id);
+  }, [activeUserId, post.id]);
 
   return (
     <>

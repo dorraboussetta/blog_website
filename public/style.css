@@ -539,3 +539,6 @@ a:hover {
 .show-text .plus-icon {
   display: none;
 }
+.continue-reading-tag{
+  text-decoration: none;
+}
