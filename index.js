@@ -171,8 +171,12 @@ app.post("/signup", async (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   const fullName = req.body.full_name;
-  const imgUrl = req.body.img_url;
+  let imgUrl = req.body.img_url;
   const rememberMe = req.body.rememberMe === "yes";
+
+  if (imgUrl.length === 0 ) {
+    imgUrl = "https://picsum.photos/200";
+  };
 
   try {
     const checkEmail = await db.query("SELECT email FROM users WHERE email=$1;", [email]);
@@ -691,7 +695,6 @@ app.get("/post-add", (req, res) => {
 //Submits a post to database
 app.post("/submit-post", async (req, res) => {
   const user = req.user;
-  console.log("triggered!");
 
   let newPost = {
     title: req.body["title"],
