@@ -86,8 +86,11 @@ function CommentCard(props) {
 
     useEffect(() => {
         getCred();
-        getLikedStatus();
     }, []);
+
+    useEffect(() => {
+        getLikedStatus();
+    }, [props.loggedInUserId]);
 
 
 
