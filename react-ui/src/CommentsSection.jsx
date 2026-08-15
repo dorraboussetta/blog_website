@@ -14,7 +14,6 @@ function CommentsSection(props) {
       const response = await axios.get("/api/user-info");
       if (response.data.isLoggedIn) {
         setActiveUserId(response.data.id);
-        console.log("request done");
       } else {
         setActiveUserId(-1);
       }

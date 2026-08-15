@@ -335,26 +335,21 @@ app.post("/update-profile", async (req, res, next) => {
           const result = await db.query("SELECT password FROM users WHERE id=$1", [req.user.id]);
           try {
             const oldPasswordIsCorrect = await bcrypt.compare(formData.oldPassword, result.rows[0].password);
-            console.log("database and typed passwords match: " + oldPasswordIsCorrect);
             if (oldPasswordIsCorrect) {
               if (formData.newPassword !== formData.confirmPassword) {
                 message = "Passwords don't match.";
               } else {
                 try {
                   const valid = await bcrypt.compare(formData.newPassword, result.rows[0].password);
-                  console.log("do the new and old password match: " + valid);
                   if (valid) {
                     message = "New password and old password match.";
-                    console.log(message);
                   } else {
                     newPassword = formData.newPassword;
                     userChangedPassword = true;
-                    console.log("password changed");
                   }
                 } catch (err) {
                   console.log("Error comparing passwords: ", err);
                   message = "Error. Please try again.";
-                  console.log(message);
                 }
               }
             } else {
@@ -376,7 +371,6 @@ app.post("/update-profile", async (req, res, next) => {
   }
 
   if (req.user.authenType === "local" && !userChangedPassword && passwordChangeAttempted) {
-    console.log("triggered!");
     return res.render("edit-profile.ejs", {
       email: req.user.email,
       name: req.user.name,
