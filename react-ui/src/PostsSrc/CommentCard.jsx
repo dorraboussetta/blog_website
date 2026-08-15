@@ -32,7 +32,7 @@ function CommentCard(props) {
 
     async function updateNbLikes(number) {
         try {
-            const result = await axios.get("/api/update-comment-nb-likes", { params: { id: props.commentObject.id, update: number } });
+            const result = await axios.patch("/api/update-comment-nb-likes", { id: props.commentObject.id, update: number });
             setNbLikes(result.data);
         } catch (err) {
             console.log(err);
@@ -42,7 +42,7 @@ function CommentCard(props) {
 
     async function updateLikeBtn(event) {
         event.preventDefault();
-        if (props.LoggedInUserId === -1) {
+        if (props.loggedInUserId === -1) {
             return;
         }
 
@@ -59,7 +59,7 @@ function CommentCard(props) {
 
     async function likeComment() {
         try {
-            const result = await axios.get("/api/add-comment-like", { params: { commentId: props.commentObject.id, userId: props.LoggedInUserId } });
+            const result = await axios.post("/api/add-comment-like", { commentId: props.commentObject.id, userId: props.loggedInUserId } );
             setLikedComment(true);
         } catch (err) {
             console.log(err);
@@ -68,7 +68,7 @@ function CommentCard(props) {
 
     async function unlikeComment() {
         try {
-            const result = await axios.get("/api/delete-comment-like", { params: { commentId: props.commentObject.id, userId: props.LoggedInUserId } });
+            const result = await axios.delete("/api/delete-comment-like", { params: { commentId: props.commentObject.id, userId: props.loggedInUserId } });
             setLikedComment(false);
         } catch (err) {
             console.log(err);
@@ -77,7 +77,7 @@ function CommentCard(props) {
 
     async function getLikedStatus() {
         try {
-            const result = await axios.get("/api/get-comment-like", { params: { commentId: props.commentObject.id, userId: props.LoggedInUserId } });
+            const result = await axios.get("/api/get-comment-like", { params: { commentId: props.commentObject.id, userId: props.loggedInUserId } });
             setLikedComment(result.data.isLikedComment);
         } catch (err) {
             console.log(err);
@@ -116,7 +116,7 @@ function CommentCard(props) {
 
 
                             </a>
-                            {(props.LoggedInUserId !== -1 && props.LoggedInUserId === props.commentObject.user_id) ?
+                            {(props.loggedInUserId !== -1 && props.loggedInUserId === props.commentObject.user_id) ?
                                 <a href="#" onClick={() => props.onDelete(props.commentObject.id)}><i className="bi bi-reply"></i> Delete</a>
                                 : null
                             }

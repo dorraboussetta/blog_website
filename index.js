@@ -174,7 +174,7 @@ app.post("/signup", async (req, res, next) => {
   let imgUrl = req.body.img_url;
   const rememberMe = req.body.rememberMe === "yes";
 
-  if (imgUrl.length === 0 ) {
+  if (imgUrl.length === 0) {
     imgUrl = "https://picsum.photos/200";
   };
 
@@ -564,18 +564,18 @@ app.get("/api/get-comments", async (req, res) => {
 });
 
 //Updates the number of likes column of the comments table
-app.get("/api/update-comment-nb-likes", async (req, res) => {
+app.patch("/api/update-comment-nb-likes", async (req, res) => {
   try {
-    const result = await db.query("UPDATE comments SET nb_likes = nb_likes + $1, full_timestamp=CURRENT_TIMESTAMP WHERE id=$2 RETURNING nb_likes; ", [req.query.update, req.query.id]);
+    const result = await db.query("UPDATE comments SET nb_likes = nb_likes + $1 WHERE id=$2 RETURNING nb_likes; ", [req.body.update, req.body.id]);
     res.json(result.rows[0].nb_likes);
   } catch (err) {
-    console.log(err);
+    console.log(err); 
   }
-
+  
 });
 
 //Deletes a comment
-app.get("/api/delete-comment", async (req, res) => {
+app.delete("/api/delete-comment", async (req, res) => {
   try {
     const result = await db.query("DELETE FROM comments WHERE id=$1 RETURNING *;", [req.query.id]);
     res.json(result.rows);
@@ -596,15 +596,15 @@ app.get("/api/get-comment-like", async (req, res) => {
       res.json({ isLikedComment: true });
     }
   } catch (err) {
-    console.log(err);
+    console.log(err); 
     res.sendStatus(404);
   }
 });
 
 //Adds a comment's nb of likes to database
-app.get("/api/add-comment-like", async (req, res) => {
+app.post("/api/add-comment-like", async (req, res) => {
   try {
-    const result = await db.query("INSERT INTO liked_comments (comment_id, user_id) VALUES ($1, $2);", [req.query.commentId, req.query.userId]);
+    const result = await db.query("INSERT INTO liked_comments (comment_id, user_id) VALUES ($1, $2);", [req.body.commentId, req.body.userId]);
     res.sendStatus(200);
   } catch (err) {
     console.log(err);
@@ -613,7 +613,7 @@ app.get("/api/add-comment-like", async (req, res) => {
 });
 
 //Deletes a comment's like from database
-app.get("/api/delete-comment-like", async (req, res) => {
+app.delete("/api/delete-comment-like", async (req, res) => {
   try {
     const result = await db.query("DELETE FROM liked_comments WHERE comment_id = $1 AND user_id = $2;", [req.query.commentId, req.query.userId]);
     res.sendStatus(200);
@@ -624,10 +624,10 @@ app.get("/api/delete-comment-like", async (req, res) => {
 });
 
 //Adds a bookmark to database
-app.get("/api/add-bookmark", async (req, res) => {
+app.post("/api/add-bookmark", async (req, res) => {
 
   try {
-    const response = await db.query("INSERT INTO bookmarks (post_id, user_id) VALUES ($1,$2) RETURNING *;", [req.query.postId, req.query.userId]);
+    const response = await db.query("INSERT INTO bookmarks (post_id, user_id) VALUES ($1,$2) RETURNING *;", [req.body.postId, req.body.userId]);
     res.sendStatus(200);
   } catch (err) {
     console.log(err);
@@ -636,7 +636,7 @@ app.get("/api/add-bookmark", async (req, res) => {
 });
 
 //Deletes a bookmark from database
-app.get("/api/delete-bookmark", async (req, res) => {
+app.delete("/api/delete-bookmark", async (req, res) => {
 
   try {
     const response = await db.query("DELETE FROM bookmarks WHERE post_id = $1 AND user_id = $2 RETURNING *;", [req.query.postId, req.query.userId]);
@@ -657,16 +657,16 @@ app.get("/api/bookmarked-posts", async (req, res) => {
   }
 });
 
-app.get("/api/is-bookmarked",  async (req,res) => {
+app.get("/api/is-bookmarked", async (req, res) => {
 
-  try{
-    const result = await db.query("SELECT * FROM bookmarks WHERE user_id = $1 AND post_id = $2;", [req.query.userId, req.query.postId]); 
+  try {
+    const result = await db.query("SELECT * FROM bookmarks WHERE user_id = $1 AND post_id = $2;", [req.query.userId, req.query.postId]);
     if (result.rows.length === 0) {
       res.json(false);
     } else {
       res.json(true);
     }
-  }catch{
+  } catch {
     console.log(err);
   }
 })
@@ -705,7 +705,7 @@ app.post("/submit-post", async (req, res) => {
     time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
     user_id: user.id,
   };
- 
+
 
   try {
     const response = await db.query("INSERT INTO posts (title, category, content, time, date, user_id, preview) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id;",

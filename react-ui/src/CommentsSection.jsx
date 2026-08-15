@@ -15,6 +15,7 @@ function CommentsSection(props) {
       const response = await axios.get("/api/user-info");
       if (response.data.isLoggedIn) {
         setActiveUserId(response.data.id);
+        console.log("request done");
       } else {
         setActiveUserId(-1);
       }
@@ -23,7 +24,11 @@ function CommentsSection(props) {
     }
 
   };
-  getActiveUserInfo();
+
+  useEffect(() => {
+     getActiveUserInfo();
+  }, []);
+ 
 
   async function loadComments() {
     try {
@@ -38,7 +43,7 @@ function CommentsSection(props) {
   async function deleteComment(id) {
     event.preventDefault();
     try {
-      const result = await axios.get("/api/delete-comment?id=" + String(id));
+      const result = await axios.delete("/api/delete-comment?id=" + String(id));
       loadComments();
     } catch (err) {
       console.log(err);
@@ -68,7 +73,7 @@ function CommentsSection(props) {
                   key={commentItem.id}
                   commentObject={commentItem}
                   PostId={props.id}
-                  LoggedInUserId={activeUserId}
+                  loggedInUserId={activeUserId}
                   onDelete={deleteComment}
                   initNbLikes = {commentItem.nb_likes}
                 />

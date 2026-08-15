@@ -61,9 +61,7 @@ function FullPostCard(props) {
 
   async function addBookmark(postId, userId) {
     try {
-      const response = await axios.get("/api/add-bookmark", {
-        params: { postId: postId, userId: userId },
-      });
+      const response = await axios.post("/api/add-bookmark", { postId: postId, userId: userId });
       return response.data;
     } catch (err) {
       console.log(err);
@@ -72,7 +70,7 @@ function FullPostCard(props) {
 
   async function deleteBookmark(postId, userId) {
     try {
-      const response = await axios.get("/api/delete-bookmark", {
+      const response = await axios.delete("/api/delete-bookmark", {
         params: { postId: postId, userId: userId },
       });
       return response.data;
