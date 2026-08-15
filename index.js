@@ -316,42 +316,67 @@ app.post("/update-profile", async (req, res, next) => {
   const formData = req.body;
   let message;
   let newPassword = "";
-  let userChangedPassword = true;
+  let userChangedPassword = false;
+  let passwordChangeAttempted = false;
   let updatedUser = {};
 
 
 
   if (req.user.authenType === "local") {
-    if (formData.oldPassword.length === 0 && (formData.newPassword.length !== 0 || formData.confirmPassword.length !== 0)) {
 
-    } else if (formData.oldPassword.length !== 0 && (formData.newPassword.length === 0 || formData.confirmPassword.length === 0)) {
-      message = "Please enter both the new password and the confirmation.";
-
-    } else if (formData.oldPassword.length === 0 && formData.newPassword.length === 0 && formData.confirmPassword.length === 0) {
-      userChangedPassword = false;
-    } else if (formData.oldPassword.length !== 0 && formData.newPassword.length !== 0 && formData.confirmPassword.length !== 0) {
-      const result = await db.query("SELECT password FROM users WHERE id=$1", [req.user.id]);
-      if (formData.newPassword !== formData.confirmPassword) {
-        message = "Passwords don't match."
-      } else {
+    if (formData.oldPassword.length !== 0 || formData.newPassword.length !== 0 || formData.confirmPassword.length !== 0) {
+      passwordChangeAttempted = true;
+      if (formData.oldPassword.length === 0 && (formData.newPassword.length !== 0 || formData.confirmPassword.length !== 0)) {
+        message = "Please enter the old password";
+      } else if (formData.oldPassword.length !== 0 && (formData.newPassword.length === 0 || formData.confirmPassword.length === 0)) {
+        message = "Please enter both the new password and the confirmation.";
+      } else if (formData.oldPassword.length !== 0 && formData.newPassword.length !== 0 && formData.confirmPassword.length !== 0) {
         try {
-          const valid = await bcrypt.compare(formData.newPassword, result.rows[0].password);
-          if (valid) {
-            message = "New password and old password match.";
-          } else {
-            newPassword = formData.newPassword;
-            userChangedPassword = true;
+          const result = await db.query("SELECT password FROM users WHERE id=$1", [req.user.id]);
+          try {
+            const oldPasswordIsCorrect = await bcrypt.compare(formData.oldPassword, result.rows[0].password);
+            console.log("database and typed passwords match: " + oldPasswordIsCorrect);
+            if (oldPasswordIsCorrect) {
+              if (formData.newPassword !== formData.confirmPassword) {
+                message = "Passwords don't match.";
+              } else {
+                try {
+                  const valid = await bcrypt.compare(formData.newPassword, result.rows[0].password);
+                  console.log("do the new and old password match: " + valid);
+                  if (valid) {
+                    message = "New password and old password match.";
+                    console.log(message);
+                  } else {
+                    newPassword = formData.newPassword;
+                    userChangedPassword = true;
+                    console.log("password changed");
+                  }
+                } catch (err) {
+                  console.log("Error comparing passwords: ", err);
+                  message = "Error. Please try again.";
+                  console.log(message);
+                }
+              }
+            } else {
+              message = "Old password is incorrect";
+            }
+
+          } catch (err) {
+            console.log("Error comparing passwords: ", err);
+            message = "Old password is incorrect.";
           }
         } catch (err) {
-          console.log("Error comparing passwords: ", err);
-          message = "Error. Please try again.";
+          console.log(err);
         }
       }
     }
 
+
+
   }
 
-  if (req.user.authenType === "local" && userChangedPassword && formData.newPassword.length === 0) {
+  if (req.user.authenType === "local" && !userChangedPassword && passwordChangeAttempted) {
+    console.log("triggered!");
     return res.render("edit-profile.ejs", {
       email: req.user.email,
       name: req.user.name,
@@ -442,7 +467,7 @@ app.post("/update-profile", async (req, res, next) => {
 });
 
 //Deletes profile
-app.get("/delete-profile", async (req, res, next) => {
+app.delete("/delete-profile", async (req, res, next) => {
 
   try {
     const result = await db.query("DELETE FROM users WHERE id=$1", [req.user.id]);
@@ -569,9 +594,9 @@ app.patch("/api/update-comment-nb-likes", async (req, res) => {
     const result = await db.query("UPDATE comments SET nb_likes = nb_likes + $1 WHERE id=$2 RETURNING nb_likes; ", [req.body.update, req.body.id]);
     res.json(result.rows[0].nb_likes);
   } catch (err) {
-    console.log(err); 
+    console.log(err);
   }
-  
+
 });
 
 //Deletes a comment
@@ -596,7 +621,7 @@ app.get("/api/get-comment-like", async (req, res) => {
       res.json({ isLikedComment: true });
     }
   } catch (err) {
-    console.log(err); 
+    console.log(err);
     res.sendStatus(404);
   }
 });
@@ -715,6 +740,7 @@ app.post("/submit-post", async (req, res) => {
 
     try {
       const result = await db.query("UPDATE users SET nb_posts=nb_posts + 1 WHERE id=$1;", [req.user.id]);
+      
     } catch (err) {
       console.log(err);
     }
@@ -777,6 +803,11 @@ app.post("/delete-post", async (req, res) => {
 
   try {
     const result = await db.query("DELETE FROM posts WHERE id=$1;", [id]);
+     try {
+      const result = await db.query("UPDATE users SET nb_posts=nb_posts - 1 WHERE id=$1;", [req.user.id]);
+    } catch (err) {
+      console.log(err);
+    }
   } catch (err) {
     console.log(err);
   }
