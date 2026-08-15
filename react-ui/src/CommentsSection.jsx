@@ -8,7 +8,6 @@ import axios from "axios";
 function CommentsSection(props) {
   const [comments, setComments] = useState([]);
   const [activeUserId, setActiveUserId] = useState(-1);
-  const [commentsReoaded, setCommentsReloaded] = useState(false);
 
   async function getActiveUserInfo() {
     try {

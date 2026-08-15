@@ -34,9 +34,7 @@ function Bookmarks() {
       const response = await axios.get("/api/bookmarked-posts", {
         params: { userId: activeUserId },
       });
-  
-      const postIds = response.data; 
- 
+   
       for (let i = 0; i < response.data.length; i++) {
         try {
           const result = await axios.get("/api/get-post", {

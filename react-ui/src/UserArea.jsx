@@ -8,9 +8,6 @@ import axios from 'axios';
 import { useState } from 'react';
 import { useEffect } from 'react';
 
-async function authCheck(){
-
-}
 
 function UserArea() {
 
