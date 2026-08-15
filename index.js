@@ -410,7 +410,7 @@ app.post("/update-profile", async (req, res, next) => {
 
   if (req.user.authenType === "google") {
     try {
-      const response = await db.query("UPDATE users SET img_url=$1 RETURNING *;", [formData.img_url, req.user.id]);
+      const response = await db.query("UPDATE users SET img_url=$1 WHERE id=$2 RETURNING *;", [formData.img_url, req.user.id]);
       updatedUser = {
         name: response.rows[0].full_name,
         email: response.rows[0].email,
