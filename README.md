@@ -456,9 +456,18 @@ Screenshots are included to show the main pages and features of the upgraded Blo
 
 ![Login Page](./screenshots/Login-Page.png)
 
+### Signup Page
+
+![Signup Page](./screenshots/Signup-Page.png)
+
+
 ### Add Post Page
 
 ![Add Post Page](./screenshots/Add-Post.png)
+
+### Edit Post Page
+
+![Edit Post Page](./screenshots/Edit-Post.png)
 
 ### My Posts Page
 
